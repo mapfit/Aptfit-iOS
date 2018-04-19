@@ -1,0 +1,6 @@
+framework module Pods_Aptfit_iOSUITests {
+  umbrella header "Pods-Aptfit-iOSUITests-umbrella.h"
+
+  export *
+  module * { export * }
+}

@@ -1,0 +1,634 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		90CAFA7D5DCFA6B82B39727B /* Pods_Aptfit_iOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DAD5D7F754CD2FDBB11FC631 /* Pods_Aptfit_iOS.framework */; };
+		BF2FEF3820890E6F00FD5AD0 /* ListingDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF2FEF3720890E6F00FD5AD0 /* ListingDetailView.swift */; };
+		BF2FEF3A208948C700FD5AD0 /* wof_nyc.geojson in Resources */ = {isa = PBXBuildFile; fileRef = BF2FEF39208948C600FD5AD0 /* wof_nyc.geojson */; };
+		BF8764D620852F1E0086F9BC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF8764D520852F1E0086F9BC /* AppDelegate.swift */; };
+		BF8764D820852F1E0086F9BC /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF8764D720852F1E0086F9BC /* ViewController.swift */; };
+		BF8764DB20852F1E0086F9BC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BF8764D920852F1E0086F9BC /* Main.storyboard */; };
+		BF8764DD20852F200086F9BC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BF8764DC20852F200086F9BC /* Assets.xcassets */; };
+		BF8764E020852F200086F9BC /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BF8764DE20852F200086F9BC /* LaunchScreen.storyboard */; };
+		BF8764EB20852F200086F9BC /* Aptfit_iOSUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF8764EA20852F200086F9BC /* Aptfit_iOSUITests.swift */; };
+		BF8764FE208679510086F9BC /* NeighborhoodCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF8764FD208679510086F9BC /* NeighborhoodCollectionViewCell.swift */; };
+		BF876500208682D30086F9BC /* ListingCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF8764FF208682D30086F9BC /* ListingCollectionViewCell.swift */; };
+		BF876502208683000086F9BC /* Listing.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF876501208683000086F9BC /* Listing.swift */; };
+		DF19633E2FD4A28893384174 /* Pods_Aptfit_iOSUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3317129D88D57182264FBC10 /* Pods_Aptfit_iOSUITests.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		BF8764E720852F200086F9BC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BF8764CA20852F1E0086F9BC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BF8764D120852F1E0086F9BC;
+			remoteInfo = "Aptfit-iOS";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		27AB7BAA4FA264EFD81E4257 /* Pods-Aptfit-iOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Aptfit-iOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-Aptfit-iOS/Pods-Aptfit-iOS.release.xcconfig"; sourceTree = "<group>"; };
+		3317129D88D57182264FBC10 /* Pods_Aptfit_iOSUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Aptfit_iOSUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		4B6773A12DD91FC47A9ACD07 /* Pods-Aptfit-iOSUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Aptfit-iOSUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Aptfit-iOSUITests/Pods-Aptfit-iOSUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		75AECBB787FCBCEDB9DB71F4 /* Pods-Aptfit-iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Aptfit-iOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Aptfit-iOS/Pods-Aptfit-iOS.debug.xcconfig"; sourceTree = "<group>"; };
+		8CC0ACA8C8652C00452FE298 /* Pods-Aptfit-iOSUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Aptfit-iOSUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-Aptfit-iOSUITests/Pods-Aptfit-iOSUITests.release.xcconfig"; sourceTree = "<group>"; };
+		BF2FEF3720890E6F00FD5AD0 /* ListingDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListingDetailView.swift; sourceTree = "<group>"; };
+		BF2FEF39208948C600FD5AD0 /* wof_nyc.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = wof_nyc.geojson; sourceTree = "<group>"; };
+		BF8764D220852F1E0086F9BC /* Aptfit-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Aptfit-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		BF8764D520852F1E0086F9BC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		BF8764D720852F1E0086F9BC /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		BF8764DA20852F1E0086F9BC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		BF8764DC20852F200086F9BC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		BF8764DF20852F200086F9BC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		BF8764E120852F200086F9BC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BF8764E620852F200086F9BC /* Aptfit-iOSUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Aptfit-iOSUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		BF8764EA20852F200086F9BC /* Aptfit_iOSUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Aptfit_iOSUITests.swift; sourceTree = "<group>"; };
+		BF8764EC20852F200086F9BC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BF8764FD208679510086F9BC /* NeighborhoodCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NeighborhoodCollectionViewCell.swift; sourceTree = "<group>"; };
+		BF8764FF208682D30086F9BC /* ListingCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListingCollectionViewCell.swift; sourceTree = "<group>"; };
+		BF876501208683000086F9BC /* Listing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Listing.swift; sourceTree = "<group>"; };
+		DAD5D7F754CD2FDBB11FC631 /* Pods_Aptfit_iOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Aptfit_iOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		BF8764CF20852F1E0086F9BC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				90CAFA7D5DCFA6B82B39727B /* Pods_Aptfit_iOS.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BF8764E320852F200086F9BC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DF19633E2FD4A28893384174 /* Pods_Aptfit_iOSUITests.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		8993CAFF627205093D3D8AB3 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				DAD5D7F754CD2FDBB11FC631 /* Pods_Aptfit_iOS.framework */,
+				3317129D88D57182264FBC10 /* Pods_Aptfit_iOSUITests.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		95A165750687CFBFD7F37300 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				75AECBB787FCBCEDB9DB71F4 /* Pods-Aptfit-iOS.debug.xcconfig */,
+				27AB7BAA4FA264EFD81E4257 /* Pods-Aptfit-iOS.release.xcconfig */,
+				4B6773A12DD91FC47A9ACD07 /* Pods-Aptfit-iOSUITests.debug.xcconfig */,
+				8CC0ACA8C8652C00452FE298 /* Pods-Aptfit-iOSUITests.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		BF8764C920852F1E0086F9BC = {
+			isa = PBXGroup;
+			children = (
+				BF8764D420852F1E0086F9BC /* Aptfit-iOS */,
+				BF8764E920852F200086F9BC /* Aptfit-iOSUITests */,
+				BF8764D320852F1E0086F9BC /* Products */,
+				95A165750687CFBFD7F37300 /* Pods */,
+				8993CAFF627205093D3D8AB3 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		BF8764D320852F1E0086F9BC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				BF8764D220852F1E0086F9BC /* Aptfit-iOS.app */,
+				BF8764E620852F200086F9BC /* Aptfit-iOSUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		BF8764D420852F1E0086F9BC /* Aptfit-iOS */ = {
+			isa = PBXGroup;
+			children = (
+				BF8764D520852F1E0086F9BC /* AppDelegate.swift */,
+				BF8764D720852F1E0086F9BC /* ViewController.swift */,
+				BF2FEF3720890E6F00FD5AD0 /* ListingDetailView.swift */,
+				BF8764FD208679510086F9BC /* NeighborhoodCollectionViewCell.swift */,
+				BF8764FF208682D30086F9BC /* ListingCollectionViewCell.swift */,
+				BF2FEF39208948C600FD5AD0 /* wof_nyc.geojson */,
+				BF876501208683000086F9BC /* Listing.swift */,
+				BF8764D920852F1E0086F9BC /* Main.storyboard */,
+				BF8764DC20852F200086F9BC /* Assets.xcassets */,
+				BF8764DE20852F200086F9BC /* LaunchScreen.storyboard */,
+				BF8764E120852F200086F9BC /* Info.plist */,
+			);
+			path = "Aptfit-iOS";
+			sourceTree = "<group>";
+		};
+		BF8764E920852F200086F9BC /* Aptfit-iOSUITests */ = {
+			isa = PBXGroup;
+			children = (
+				BF8764EA20852F200086F9BC /* Aptfit_iOSUITests.swift */,
+				BF8764EC20852F200086F9BC /* Info.plist */,
+			);
+			path = "Aptfit-iOSUITests";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		BF8764D120852F1E0086F9BC /* Aptfit-iOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BF8764EF20852F200086F9BC /* Build configuration list for PBXNativeTarget "Aptfit-iOS" */;
+			buildPhases = (
+				DD79B843A1E36D83D05B748A /* [CP] Check Pods Manifest.lock */,
+				BF8764CE20852F1E0086F9BC /* Sources */,
+				BF8764CF20852F1E0086F9BC /* Frameworks */,
+				BF8764D020852F1E0086F9BC /* Resources */,
+				317E7C5048BB6A0F33639425 /* [CP] Embed Pods Frameworks */,
+				756763253991C7855E702710 /* [CP] Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Aptfit-iOS";
+			productName = "Aptfit-iOS";
+			productReference = BF8764D220852F1E0086F9BC /* Aptfit-iOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+		BF8764E520852F200086F9BC /* Aptfit-iOSUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BF8764F220852F200086F9BC /* Build configuration list for PBXNativeTarget "Aptfit-iOSUITests" */;
+			buildPhases = (
+				BCC2BC18217ABAC94897672B /* [CP] Check Pods Manifest.lock */,
+				BF8764E220852F200086F9BC /* Sources */,
+				BF8764E320852F200086F9BC /* Frameworks */,
+				BF8764E420852F200086F9BC /* Resources */,
+				90B7CD1989FD6A288B4E312B /* [CP] Embed Pods Frameworks */,
+				18EDCDD61E8353F261676321 /* [CP] Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BF8764E820852F200086F9BC /* PBXTargetDependency */,
+			);
+			name = "Aptfit-iOSUITests";
+			productName = "Aptfit-iOSUITests";
+			productReference = BF8764E620852F200086F9BC /* Aptfit-iOSUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		BF8764CA20852F1E0086F9BC /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0930;
+				LastUpgradeCheck = 0930;
+				ORGANIZATIONNAME = Mapfit;
+				TargetAttributes = {
+					BF8764D120852F1E0086F9BC = {
+						CreatedOnToolsVersion = 9.3;
+					};
+					BF8764E520852F200086F9BC = {
+						CreatedOnToolsVersion = 9.3;
+						TestTargetID = BF8764D120852F1E0086F9BC;
+					};
+				};
+			};
+			buildConfigurationList = BF8764CD20852F1E0086F9BC /* Build configuration list for PBXProject "Aptfit-iOS" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = BF8764C920852F1E0086F9BC;
+			productRefGroup = BF8764D320852F1E0086F9BC /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				BF8764D120852F1E0086F9BC /* Aptfit-iOS */,
+				BF8764E520852F200086F9BC /* Aptfit-iOSUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		BF8764D020852F1E0086F9BC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BF8764E020852F200086F9BC /* LaunchScreen.storyboard in Resources */,
+				BF8764DD20852F200086F9BC /* Assets.xcassets in Resources */,
+				BF8764DB20852F1E0086F9BC /* Main.storyboard in Resources */,
+				BF2FEF3A208948C700FD5AD0 /* wof_nyc.geojson in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BF8764E420852F200086F9BC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		18EDCDD61E8353F261676321 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Aptfit-iOSUITests/Pods-Aptfit-iOSUITests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		317E7C5048BB6A0F33639425 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-Aptfit-iOS/Pods-Aptfit-iOS-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/Mapfit/Mapfit.framework",
+				"${PODS_ROOT}/Tetragon-mobile/tetragon-release-1.1.1/TangramMap.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Mapfit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/TangramMap.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Aptfit-iOS/Pods-Aptfit-iOS-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		756763253991C7855E702710 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Aptfit-iOS/Pods-Aptfit-iOS-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		90B7CD1989FD6A288B4E312B /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Aptfit-iOSUITests/Pods-Aptfit-iOSUITests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		BCC2BC18217ABAC94897672B /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Aptfit-iOSUITests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		DD79B843A1E36D83D05B748A /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Aptfit-iOS-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		BF8764CE20852F1E0086F9BC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BF8764D820852F1E0086F9BC /* ViewController.swift in Sources */,
+				BF8764FE208679510086F9BC /* NeighborhoodCollectionViewCell.swift in Sources */,
+				BF876502208683000086F9BC /* Listing.swift in Sources */,
+				BF8764D620852F1E0086F9BC /* AppDelegate.swift in Sources */,
+				BF2FEF3820890E6F00FD5AD0 /* ListingDetailView.swift in Sources */,
+				BF876500208682D30086F9BC /* ListingCollectionViewCell.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BF8764E220852F200086F9BC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BF8764EB20852F200086F9BC /* Aptfit_iOSUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		BF8764E820852F200086F9BC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BF8764D120852F1E0086F9BC /* Aptfit-iOS */;
+			targetProxy = BF8764E720852F200086F9BC /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		BF8764D920852F1E0086F9BC /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				BF8764DA20852F1E0086F9BC /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		BF8764DE20852F200086F9BC /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				BF8764DF20852F200086F9BC /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		BF8764ED20852F200086F9BC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		BF8764EE20852F200086F9BC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		BF8764F020852F200086F9BC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 75AECBB787FCBCEDB9DB71F4 /* Pods-Aptfit-iOS.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 5G73R47QN9;
+				INFOPLIST_FILE = "Aptfit-iOS/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "Mapfit.Aptfit-iOS";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		BF8764F120852F200086F9BC /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 27AB7BAA4FA264EFD81E4257 /* Pods-Aptfit-iOS.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 5G73R47QN9;
+				INFOPLIST_FILE = "Aptfit-iOS/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "Mapfit.Aptfit-iOS";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		BF8764F320852F200086F9BC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4B6773A12DD91FC47A9ACD07 /* Pods-Aptfit-iOSUITests.debug.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 5G73R47QN9;
+				INFOPLIST_FILE = "Aptfit-iOSUITests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "Mapfit.Aptfit-iOSUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "Aptfit-iOS";
+			};
+			name = Debug;
+		};
+		BF8764F420852F200086F9BC /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8CC0ACA8C8652C00452FE298 /* Pods-Aptfit-iOSUITests.release.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 5G73R47QN9;
+				INFOPLIST_FILE = "Aptfit-iOSUITests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "Mapfit.Aptfit-iOSUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "Aptfit-iOS";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		BF8764CD20852F1E0086F9BC /* Build configuration list for PBXProject "Aptfit-iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BF8764ED20852F200086F9BC /* Debug */,
+				BF8764EE20852F200086F9BC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BF8764EF20852F200086F9BC /* Build configuration list for PBXNativeTarget "Aptfit-iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BF8764F020852F200086F9BC /* Debug */,
+				BF8764F120852F200086F9BC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BF8764F220852F200086F9BC /* Build configuration list for PBXNativeTarget "Aptfit-iOSUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BF8764F320852F200086F9BC /* Debug */,
+				BF8764F420852F200086F9BC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = BF8764CA20852F1E0086F9BC /* Project object */;
+}

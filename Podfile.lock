@@ -1,0 +1,15 @@
+PODS:
+  - Mapfit (1.2.1):
+    - Tetragon-mobile
+  - Tetragon-mobile (1.1.1)
+
+DEPENDENCIES:
+  - Mapfit
+
+SPEC CHECKSUMS:
+  Mapfit: 365a3745deec615d59551b4074dbe525aaf056af
+  Tetragon-mobile: f4b8b0e7745f660d01989e680eeb96d43066596a
+
+PODFILE CHECKSUM: 8ca6645b6b89b345b0b11ed57a458c2738e0249a
+
+COCOAPODS: 1.4.0
