@@ -10,12 +10,76 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Aptfit-iOS/ViewController.swift"
-            timestampString = "545866327.816618"
+            timestampString = "545937794.953071"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "299"
-            endingLineNumber = "299"
-            landmarkName = "collectionView(_:cellForItemAt:)"
+            startingLineNumber = "361"
+            endingLineNumber = "361"
+            landmarkName = "showNeighborhoods()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Aptfit-iOS/ViewController.swift"
+            timestampString = "545937794.953828"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "15"
+            endingLineNumber = "15"
+            landmarkName = "LocationJson"
+            landmarkType = "14">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Aptfit_iOS.LocationJson.type.getter : Swift.String"
+                  moduleName = "Aptfit-iOS"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/zain/Desktop/Aptfit-iOS/Aptfit-iOS/ViewController.swift"
+                  timestampString = "545936302.233189"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "16"
+                  endingLineNumber = "16"
+                  offsetFromSymbolStart = "44">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Aptfit_iOS.LocationJson.type.setter : Swift.String"
+                  moduleName = "Aptfit-iOS"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/zain/Desktop/Aptfit-iOS/Aptfit-iOS/ViewController.swift"
+                  timestampString = "545936302.237883"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "16"
+                  endingLineNumber = "16"
+                  offsetFromSymbolStart = "90">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Aptfit-iOS/ViewController.swift"
+            timestampString = "545937794.954235"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "371"
+            endingLineNumber = "371"
+            landmarkName = "showNeighborhoods()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

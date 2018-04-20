@@ -9,7 +9,26 @@
 import UIKit
 import Mapfit
 import CoreLocation
-import TangramMap
+
+
+struct LocationJson : Decodable {
+    var type: String
+    var features: [Features]
+    
+}
+struct Features : Decodable {
+    var type: String
+    var properties: [String: String]
+    var geometry: Geometry
+}
+
+struct Geometry: Decodable {
+    var type : String
+    var coordinates : [[[[Double]]]]
+    
+    
+    
+}
 
 class ViewController: UIViewController {
 
@@ -33,7 +52,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         createDummyData()
-   
+        showNeighborhoods()
         setUpNavBar()
         setUpNeighborhoodCollectionView()
         
@@ -78,9 +97,9 @@ class ViewController: UIViewController {
             
         }
         
-        let update = TGSceneUpdate(path: "global.show_transit", value: "true")
-        
-        mapView.mapView.updateSceneAsync([update])
+//        let update = TGSceneUpdate(path: "global.show_transit", value: "true")
+//
+//        mapView.mapView.updateSceneAsync([update])
     }
     
     func setUpNavBar(){
@@ -335,19 +354,36 @@ extension ViewController {
     
     func showNeighborhoods(){
         
-        if let path = Bundle.main.path(forResource: "test", ofType: "json") {
+        if let path = Bundle.main.path(forResource: "wof_nyc", ofType: "json") {
             do {
-                let data = try Data(contentsOf: URL(fileURLWithPath: path), options: .mappedIfSafe)
-                let jsonResult = try JSONSerialization.jsonObject(with: data, options: .mutableLeaves)
-                if let jsonResult = jsonResult as? Dictionary<String, AnyObject>, let person = jsonResult["person"] as? [Any] {
-                    // do stuff
+                let data = try Data(contentsOf: URL(fileURLWithPath: path))
+                let decoder = JSONDecoder()
+                let locationJson = try! decoder.decode(LocationJson.self, from: data)
+                
+                for feature in locationJson.features {
+                    var polygon = [CLLocationCoordinate2D]()
+                    
+                    for coordinate in feature.geometry.coordinates[0][0]{
+                        polygon.append(getCoordinateFromDouble(coordinate))
+                    }
+                    
+                    
+                    mapView.addPolygon([polygon])
                 }
+                
+                
+        
+                
             } catch {
                 // handle error
             }
         }
         
         
+    }
+    
+    func getCoordinateFromDouble(_ double: [Double]) -> CLLocationCoordinate2D {
+        return CLLocationCoordinate2D(latitude: double[1], longitude: double[0])
     }
     
     func textToImage(drawText text: String, inImage image: UIImage, atPoint point: CGPoint) -> UIImage {
