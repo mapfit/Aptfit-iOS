@@ -11,6 +11,7 @@ import Mapfit
 import CoreLocation
 
 
+
 struct LocationJson : Decodable {
     var type: String
     var features: [Features]
@@ -45,9 +46,13 @@ class ViewController: UIViewController {
     var initialCenter: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: 40.73748242049333, longitude: -73.95733284034074)
     
     lazy var listings: [Listing] = [Listing]()
+    lazy var currentlyShowingArea = String()
+    lazy var currentlyShowingMakers = [MFTMarker]()
+    
     
     lazy var neighborhoods: [String] = ["New York City","Chelsea"]
     lazy var mapView: MFTMapView = MFTMapView()
+    lazy var areaPolygons: [String : MFTPolygon] = [:]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -59,10 +64,11 @@ class ViewController: UIViewController {
         setUpMap()
         
         setUpHorizontalCollectionView()
-        setUpVerticalCollectionView()
+        //setUpVerticalCollectionView()
         
         setUpFilterToggle()
         checkBuildingPolygon()
+        mapView.polygonSelectDelegate = self
         //setUpListingDetailView()
         
         // Do any additional setup after loading the view, typically from a nib.
@@ -335,6 +341,16 @@ extension ViewController: UICollectionViewDataSource, UICollectionViewDelegate, 
         return UIEdgeInsetsMake(0, 18, 0, 18)
     }
     
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if collectionView == listingHorizontalCollectionView {
+            
+            self.setUpListingDetailView()
+            listingDetailView?.setUpView(listing: listings[indexPath.row])
+        }
+        
+        
+    }
+    
     
 }
 
@@ -342,14 +358,14 @@ extension ViewController {
     
     func createDummyData(){
         
-        var listing = Listing(uuid: NSUUID.init(), address: "180 West 20th Street, Unit 2C", bedrooms: 1, bathrooms: 1, squarefeet: 700, price: "2,450", neighborhood: "Chelsea, Manhattan", images: [#imageLiteral(resourceName: "dummyApt")], availablilityDate: "June 14th, 2018")
-        
-        self.listings.append(listing)
-        self.listings.append(listing)
-        self.listings.append(listing)
-        self.listings.append(listing)
-        self.listings.append(listing)
-        self.listings.append(listing)
+//        var listing = Listing(uuid: NSUUID.init(), bedrooms: 1, price: "2,450", address: "180 West 20th Street, Unit 2C", bathrooms: 1, squarefeet: 700, neighborhood: "Chelsea, Manhattan", images: [#imageLiteral(resourceName: "dummyApt")], availablilityDate: "June 14th, 2018")
+//
+//        self.listings.append(listing)
+//        self.listings.append(listing)
+//        self.listings.append(listing)
+//        self.listings.append(listing)
+//        self.listings.append(listing)
+//        self.listings.append(listing)
     }
     
     func showNeighborhoods(){
@@ -366,14 +382,13 @@ extension ViewController {
                     for coordinate in feature.geometry.coordinates[0][0]{
                         polygon.append(getCoordinateFromDouble(coordinate))
                     }
-                    
-                    
-                    mapView.addPolygon([polygon])
+
+                    let areaPolygon = mapView.addPolygon([polygon])
+                    guard let neighborhood = feature.properties["name"] else { return }
+                    areaPolygons[neighborhood] = areaPolygon
+
                 }
-                
-                
-        
-                
+
             } catch {
                 // handle error
             }
@@ -416,9 +431,121 @@ extension ViewController {
     
 }
 
+extension ViewController: MapPolygonSelectDelegate {
+    
+    func mapView(_ view: MFTMapView, didSelectPolygon polygon: MFTPolygon, atScreenPosition position: CGPoint) {
+       
+        //change color not working
+        if currentlyShowingArea == areaPolygons.someKey(forValue: polygon) {
+            return
+        }
+        
+       mapView.mapView.markerRemoveAll()
+        for marker in self.currentlyShowingMakers {
+            if let polygon = marker.buildingPolygon {
+                mapView.removePolygon(polygon)
+            }
+        }
+
+        
+        guard let key = areaPolygons.someKey(forValue: polygon) else { return }
+        currentlyShowingArea = key
+        
+        
+        
+        var listingsToShow = [Listing]()
+        
+        switch key {
+        case "Financial District":
+            listingsToShow = financialDistrict()
+            
+        case "Greenwich Village":
+            listingsToShow = greenwichVillage()
+        case "Battery Park City District":
+            listingsToShow = batteryParkCity()
+        case "Little Italy":
+            listingsToShow = littleItaly()
+        case "Chelsea":
+            listingsToShow = chelsea()
+        case "East Village":
+            listingsToShow = eastVillage()
+        case "Tribeca":
+            listingsToShow = tribeca()
+        case "Chinatown":
+            listingsToShow = chinaTown()
+        case "Murray Hill":
+            listingsToShow = murrayHill()
+        case "Stuyvesant Town":
+            listingsToShow = stuyesantTown()
+        case "Washington Heights":
+            listingsToShow = washingtonHeights()
+        case "Hamilton Heights":
+            listingsToShow = hamiltonHeights()
+        case "Central Harlem":
+            listingsToShow = centralHarlem()
+        case "SoHo":
+            listingsToShow = soho()
+        case "Spanish Harlem":
+            listingsToShow = spanishHarlem()
+        case "Morningside Heights":
+            listingsToShow = morningsideHeights()
+        case "Hell's Kitchen":
+            listingsToShow = hellsKitchen()
+        case "Midtown West":
+            listingsToShow = midtownWest()
+        case "Midtown East":
+            listingsToShow = midtownEast()
+        case "Lower East Side":
+            listingsToShow = lowerEastside()
+        case "Gramercy":
+            listingsToShow = gramercy()
+        case "West Side":
+            listingsToShow = upperWestSide()
+        case "West Village":
+            listingsToShow = westVillage()
+        case "NoHo":
+            listingsToShow = noho()
+        case "Two Bridges":
+            listingsToShow = twoBridges()
+        case "Nolita":
+            listingsToShow = nolita()
+        case "Kips Bay":
+            listingsToShow = kipsBay()
+        case "Upper East Side":
+            listingsToShow = upperEastSide()
+        case "City Hall Area":
+            listingsToShow = cityHallArea()
+        case "Roosevelt Island":
+            listingsToShow = rooseveltIsland()
+        case "Flatiron District":
+            listingsToShow = flatironDistrict()
+        default:
+            print("Not Financial District")
+        }
+        
+        listings = listingsToShow
+        listingHorizontalCollectionView?.reloadData()
+        
+        
+        for listing in listingsToShow {
+           
+            self.mapView.addMarker(address: listing.address) { (marker, error) in
+                let image = self.textToImage(drawText: listing.price, inImage: #imageLiteral(resourceName: "customBlackMarker"), atPoint: CGPoint(x: 0, y: 3))
+                marker?.setIcon(image)
+                marker?.markerOptions?.setWidth(width: 67)
+                marker?.markerOptions?.setHeight(height: 50)
+                if let marker = marker { self.currentlyShowingMakers.append(marker)}
+            }
+        
+        }
+    }
+    
+    
+}
 
 
-struct RealEstate {
+
+struct Listing {
 var name: String
 var imageUrl: String
 var price: String
@@ -430,208 +557,270 @@ var area: Int
 var availableDate: String
 }
 
+extension Dictionary where Value: Equatable {
+    func someKey(forValue val: Value) -> Key? {
+        return first(where: { $1 == val })?.key
+    }
+}
+
 extension ViewController {
     
-    func financialDistrict() -> [RealEstate] {
+    func financialDistrict() -> [Listing] {
         return [
-            RealEstate(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$2,400", address: "65 Broadway, New York, NY 10006", neighborhood: "Financial District, Manhattan", bedroomCount: 2, bathroomCount: 1, area: 350, availableDate: "July 14th, 2018"),
-            RealEstate(name: "apt2", imageUrl:  "https://images.unsplash.com/photo-1494526585095-c41746248156?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=fd170b4cebb0b97e6337529754defcf7&auto=format&fit=crop&w=1024&q=80", price: "$3,200", address: "124 Fulton St, New York, NY 10038", neighborhood: "Financial District, Manhattan", bedroomCount: 2, bathroomCount: 1, area: 900, availableDate: "June 16th, 2018"),
-            RealEstate(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1494526585095-c41746248156?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=fd170b4cebb0b97e6337529754defcf7&auto=format&fit=crop&w=1024&q=80", price: "$5,300", address: "48 Wall St, New York, NY 10005", neighborhood: "Financial District, Manhattan", bedroomCount: 2, bathroomCount: 1, area: 900, availableDate: "June 16th, 2018"),
-            RealEstate(name: "apt4", imageUrl: "https://images.unsplash.com/photo-1494526585095-c41746248156?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=fd170b4cebb0b97e6337529754defcf7&auto=format&fit=crop&w=1024&q=80", price: "$5,300", address: "16 Beaver St, New York, NY 10004", neighborhood: "Financial District, Manhattan", bedroomCount: 2, bathroomCount: 1, area: 900, availableDate: "June 16th, 2018")
+            Listing(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$2,400", address: "65 Broadway, New York, NY 10006", neighborhood: "Financial District, Manhattan", bedroomCount: 2, bathroomCount: 1, area: 350, availableDate: "July 14th, 2018"),
+            Listing(name: "apt2", imageUrl:  "https://images.unsplash.com/photo-1494526585095-c41746248156?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=fd170b4cebb0b97e6337529754defcf7&auto=format&fit=crop&w=1024&q=80", price: "$3,200", address: "124 Fulton St, New York, NY 10038", neighborhood: "Financial District, Manhattan", bedroomCount: 2, bathroomCount: 1, area: 900, availableDate: "June 16th, 2018"),
+            Listing(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1494526585095-c41746248156?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=fd170b4cebb0b97e6337529754defcf7&auto=format&fit=crop&w=1024&q=80", price: "$5,300", address: "48 Wall St, New York, NY 10005", neighborhood: "Financial District, Manhattan", bedroomCount: 2, bathroomCount: 1, area: 900, availableDate: "June 16th, 2018"),
+            Listing(name: "apt4", imageUrl: "https://images.unsplash.com/photo-1494526585095-c41746248156?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=fd170b4cebb0b97e6337529754defcf7&auto=format&fit=crop&w=1024&q=80", price: "$5,300", address: "16 Beaver St, New York, NY 10004", neighborhood: "Financial District, Manhattan", bedroomCount: 2, bathroomCount: 1, area: 900, availableDate: "June 16th, 2018")
         ]
     }
     
-    func greenwichVillage() -> [RealEstate] {
+    func greenwichVillage() -> [Listing] {
         return [
-            RealEstate(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$2,400", address: "23 E 9th St, New York, NY 10003", neighborhood: "Greenwich Village, Manhattan", bedroomCount: 2, bathroomCount: 1, area: 350, availableDate: "July 14th, 2018"),
-            RealEstate(name: "apt2", imageUrl:  "https://images.unsplash.com/photo-1494526585095-c41746248156?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=fd170b4cebb0b97e6337529754defcf7&auto=format&fit=crop&w=1024&q=80", price: "$3,200", address: "566 LaGuardia Pl, New York, NY 10012", neighborhood: "Greenwich Village, Manhattan", bedroomCount: 2, bathroomCount: 1, area: 900, availableDate: "June 16th, 2018"),
+            Listing(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$2,400", address: "23 E 9th St, New York, NY 10003", neighborhood: "Greenwich Village, Manhattan", bedroomCount: 2, bathroomCount: 1, area: 350, availableDate: "July 14th, 2018"),
+            Listing(name: "apt2", imageUrl:  "https://images.unsplash.com/photo-1494526585095-c41746248156?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=fd170b4cebb0b97e6337529754defcf7&auto=format&fit=crop&w=1024&q=80", price: "$3,200", address: "566 LaGuardia Pl, New York, NY 10012", neighborhood: "Greenwich Village, Manhattan", bedroomCount: 2, bathroomCount: 1, area: 900, availableDate: "June 16th, 2018"),
         ]
     }
     
-    func batteryParkCity() -> [RealEstate] {
+    func batteryParkCity() -> [Listing] {
         return [
-            RealEstate(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$2,400", address: "98 Battery Pl New York, NY 10280",
+            Listing(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$2,400", address: "98 Battery Pl New York, NY 10280",
                        neighborhood: "Battery Park City, Manhattan", bedroomCount: 2, bathroomCount: 1, area: 350, availableDate: "July 14th, 2018"),
-            RealEstate(name: "apt2", imageUrl:  "https://images.unsplash.com/photo-1494526585095-c41746248156?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=fd170b4cebb0b97e6337529754defcf7&auto=format&fit=crop&w=1024&q=80", price: "$3,200", address: "380 Rector Pl, New York, NY 10280", neighborhood: "Battery Park City, Manhattan", bedroomCount: 2, bathroomCount: 1, area: 900, availableDate: "June 16th, 2018"),
-            RealEstate(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1494526585095-c41746248156?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=fd170b4cebb0b97e6337529754defcf7&auto=format&fit=crop&w=1024&q=80", price: "$5,300", address: "211 North End Ave, New York, NY 10282", neighborhood: "Battery Park City, Manhattan", bedroomCount: 2, bathroomCount: 1, area: 900, availableDate: "June 16th, 2018"),
+            Listing(name: "apt2", imageUrl:  "https://images.unsplash.com/photo-1494526585095-c41746248156?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=fd170b4cebb0b97e6337529754defcf7&auto=format&fit=crop&w=1024&q=80", price: "$3,200", address: "380 Rector Pl, New York, NY 10280", neighborhood: "Battery Park City, Manhattan", bedroomCount: 2, bathroomCount: 1, area: 900, availableDate: "June 16th, 2018"),
+            Listing(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1494526585095-c41746248156?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=fd170b4cebb0b97e6337529754defcf7&auto=format&fit=crop&w=1024&q=80", price: "$5,300", address: "211 North End Ave, New York, NY 10282", neighborhood: "Battery Park City, Manhattan", bedroomCount: 2, bathroomCount: 1, area: 900, availableDate: "June 16th, 2018"),
         ]
     }
     
-    func littleItaly() -> [RealEstate] {
+    func littleItaly() -> [Listing] {
         return [
-            RealEstate(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$2,400", address: "199 Hester St, New York, NY 10013",
+            Listing(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$2,400", address: "199 Hester St, New York, NY 10013",
                        neighborhood: "Little Italy, Manhattan", bedroomCount: 2, bathroomCount: 1, area: 350, availableDate: "July 14th, 2018"),
-            RealEstate(name: "apt2", imageUrl:  "https://images.unsplash.com/photo-1494526585095-c41746248156?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=fd170b4cebb0b97e6337529754defcf7&auto=format&fit=crop&w=1024&q=80", price: "$3,200", address: "197 Grand St, New York, NY 10013", neighborhood: "Little Italy, Manhattan", bedroomCount: 2, bathroomCount: 1, area: 900, availableDate: "June 16th, 2018"),
-            RealEstate(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1494526585095-c41746248156?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=fd170b4cebb0b97e6337529754defcf7&auto=format&fit=crop&w=1024&q=80", price: "$5,300", address: "225 Canal St New York, NY 10013", neighborhood: "Little Italy, Manhattan", bedroomCount: 2, bathroomCount: 1, area: 900, availableDate: "June 16th, 2018"),
+            Listing(name: "apt2", imageUrl:  "https://images.unsplash.com/photo-1494526585095-c41746248156?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=fd170b4cebb0b97e6337529754defcf7&auto=format&fit=crop&w=1024&q=80", price: "$3,200", address: "197 Grand St, New York, NY 10013", neighborhood: "Little Italy, Manhattan", bedroomCount: 2, bathroomCount: 1, area: 900, availableDate: "June 16th, 2018"),
+            Listing(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1494526585095-c41746248156?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=fd170b4cebb0b97e6337529754defcf7&auto=format&fit=crop&w=1024&q=80", price: "$5,300", address: "225 Canal St New York, NY 10013", neighborhood: "Little Italy, Manhattan", bedroomCount: 2, bathroomCount: 1, area: 900, availableDate: "June 16th, 2018"),
         ]
     }
     
-    func chelsea() -> [RealEstate] {
-        return [ RealEstate(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "312 W 23rd St, New York, NY 10011", neighborhood: "Chelsea, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
-                 RealEstate(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "626 W 28th St New York, NY 10001", neighborhood: "Chelsea, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
-                 RealEstate(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "170 8th Ave, New York, NY 10011", neighborhood: "Chelsea, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
+    func chelsea() -> [Listing] {
+        return [ Listing(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "312 W 23rd St, New York, NY 10011", neighborhood: "Chelsea, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
+                 Listing(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "626 W 28th St New York, NY 10001", neighborhood: "Chelsea, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
+                 Listing(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "170 8th Ave, New York, NY 10011", neighborhood: "Chelsea, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
         ]
     }
     
-    func eastVillage() -> [RealEstate] {
-        return [ RealEstate(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "222A E 11th St New York, NY 10003", neighborhood: "East Village, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
-                 RealEstate(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "309 E 5th St, New York, NY 10003", neighborhood: "East Village, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
-                 RealEstate(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "709 E 6th St, New York, NY 10009", neighborhood: "East Village, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
+    func eastVillage() -> [Listing] {
+        return [ Listing(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "222A E 11th St New York, NY 10003", neighborhood: "East Village, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
+                 Listing(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "309 E 5th St, New York, NY 10003", neighborhood: "East Village, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
+                 Listing(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "709 E 6th St, New York, NY 10009", neighborhood: "East Village, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
         ]
     }
     
     
     
-    func tribeca() -> [RealEstate] {
-        return [ RealEstate(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "60 Vestry St, New York, NY 10013", neighborhood: "Tribeca, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 13th, 2018"),
-                 RealEstate(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$1500", address: "110 Chambers St, New York, NY 10007", neighborhood: "Tribeca, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
-                 RealEstate(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$1900", address: "65 Worth St, New York, NY 10013", neighborhood: "Tribeca, Manhattan", bedroomCount: 2, bathroomCount: 1, area: 550, availableDate: "June 11th, 2018"),
+    func tribeca() -> [Listing] {
+        return [ Listing(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "60 Vestry St, New York, NY 10013", neighborhood: "Tribeca, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 13th, 2018"),
+                 Listing(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$1500", address: "110 Chambers St, New York, NY 10007", neighborhood: "Tribeca, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
+                 Listing(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$1900", address: "65 Worth St, New York, NY 10013", neighborhood: "Tribeca, Manhattan", bedroomCount: 2, bathroomCount: 1, area: 550, availableDate: "June 11th, 2018"),
         ]
     }
     
-    func chinaTown() -> [RealEstate] {
-        return [ RealEstate(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "110 Centre St, New York, NY 10013", neighborhood: "Chinatown, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 13th, 2018"),
-                 RealEstate(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$1500", address: "25 Allen St, New York, NY 10002", neighborhood: "Chinatown, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018")
+    func chinaTown() -> [Listing] {
+        return [ Listing(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "110 Centre St, New York, NY 10013", neighborhood: "Chinatown, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 13th, 2018"),
+                 Listing(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$1500", address: "25 Allen St, New York, NY 10002", neighborhood: "Chinatown, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018")
         ]
     }
     
-    func murrayHill() -> [RealEstate] {
-        return [ RealEstate(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "593 3rd Ave, New York, NY 10016", neighborhood: "Murray Hill, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
-                 RealEstate(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "248 E 35th St, New York, NY 10016", neighborhood: "Murray Hill, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
-                 RealEstate(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "139 E 36th St, New York, NY 10016", neighborhood: "Murray Hill, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
+    func murrayHill() -> [Listing] {
+        return [ Listing(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "593 3rd Ave, New York, NY 10016", neighborhood: "Murray Hill, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
+                 Listing(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "248 E 35th St, New York, NY 10016", neighborhood: "Murray Hill, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
+                 Listing(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "139 E 36th St, New York, NY 10016", neighborhood: "Murray Hill, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
         ]
     }
     
 
-    func stuyesantTown() -> [RealEstate] {
-        return [ RealEstate(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "285 Avenue C Loop New York, NY 10009", neighborhood: "Stuyvesant Town, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
-                 RealEstate(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "510 E 20th St, New York, NY 10009", neighborhood: "Stuyvesant Town, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
-                  RealEstate(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "451 E 14th St, New York, NY 10009", neighborhood: "Stuyvesant Town, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
+    func stuyesantTown() -> [Listing] {
+        return [ Listing(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "285 Avenue C Loop New York, NY 10009", neighborhood: "Stuyvesant Town, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
+                 Listing(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "510 E 20th St, New York, NY 10009", neighborhood: "Stuyvesant Town, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
+                  Listing(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "451 E 14th St, New York, NY 10009", neighborhood: "Stuyvesant Town, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
         ]
     }
     
     
-    func washingtonHeights() -> [RealEstate] {
-        return [ RealEstate(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "720 W 173rd St New York, NY 10032", neighborhood: "Washington Heights, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
-                 RealEstate(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "521 W 157th St New York, NY 10032", neighborhood: "Washington Heights, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
-                 RealEstate(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "643 W 172nd St New York, NY 10032", neighborhood: "Washington Heights, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
-                   RealEstate(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "120 Cabrini Blvd New York, NY 10032", neighborhood: "Washington Heights, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
-                   RealEstate(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "615 W 184th St New York, NY 10032", neighborhood: "Washington Heights, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
+    func washingtonHeights() -> [Listing] {
+        return [ Listing(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "720 W 173rd St New York, NY 10032", neighborhood: "Washington Heights, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
+                 Listing(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "521 W 157th St New York, NY 10032", neighborhood: "Washington Heights, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
+                 Listing(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "643 W 172nd St New York, NY 10032", neighborhood: "Washington Heights, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
+                   Listing(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "120 Cabrini Blvd New York, NY 10032", neighborhood: "Washington Heights, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
+                   Listing(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "615 W 184th St New York, NY 10032", neighborhood: "Washington Heights, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
         ]
     }
     
-    func hamiltonHeights() -> [RealEstate] {
-        return [ RealEstate(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "610 W 145th St, New York, NY 10031", neighborhood: "Hamilton Heights, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 13th, 2018"),
-                 RealEstate(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "618 W 143rd St, New York, NY 10031", neighborhood: "Hamilton Heights, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
-                 RealEstate(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "501 W 138th St, New York, NY 10031", neighborhood: "Hamilton Heights, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 750, availableDate: "June 11th, 2018"),
+    func hamiltonHeights() -> [Listing] {
+        return [ Listing(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "610 W 145th St, New York, NY 10031", neighborhood: "Hamilton Heights, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 13th, 2018"),
+                 Listing(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "618 W 143rd St, New York, NY 10031", neighborhood: "Hamilton Heights, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
+                 Listing(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "501 W 138th St, New York, NY 10031", neighborhood: "Hamilton Heights, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 750, availableDate: "June 11th, 2018"),
         ]
     }
     
     
     
-    func centralHarlem() -> [RealEstate] {
-        return [ RealEstate(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "2538 Adam Clayton Powell Jr Blvd, New York, NY 10039", neighborhood: "Central Harlem, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 13th, 2018"),
-                 RealEstate(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "300 W 135th St, New York, NY 10027", neighborhood: "Central Harlem, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
-                 RealEstate(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "8 Mt Morris Park W, New York, NY 10027", neighborhood: "Central Harlem, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 750, availableDate: "June 11th, 2018"),
+    func centralHarlem() -> [Listing] {
+        return [ Listing(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "2538 Adam Clayton Powell Jr Blvd, New York, NY 10039", neighborhood: "Central Harlem, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 13th, 2018"),
+                 Listing(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "300 W 135th St, New York, NY 10027", neighborhood: "Central Harlem, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
+                 Listing(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "8 Mt Morris Park W, New York, NY 10027", neighborhood: "Central Harlem, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 750, availableDate: "June 11th, 2018"),
         ]
     }
     
-    func soho() -> [RealEstate] {
-        return [ RealEstate(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "34 Macdougal St, New York, NY 10012", neighborhood: "Soho, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 13th, 2018"),
-                 RealEstate(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "55 Vandam St, New York, NY 10013", neighborhood: "Soho, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
-                 RealEstate(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "463 Broome St New York, NY 10013", neighborhood: "Soho, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 750, availableDate: "June 11th, 2018"),
+    func soho() -> [Listing] {
+        return [ Listing(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "34 Macdougal St, New York, NY 10012", neighborhood: "Soho, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 13th, 2018"),
+                 Listing(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "55 Vandam St, New York, NY 10013", neighborhood: "Soho, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
+                 Listing(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "463 Broome St New York, NY 10013", neighborhood: "Soho, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 750, availableDate: "June 11th, 2018"),
         ]
     }
     
-    func spanishHarlem() -> [RealEstate] {
-        return [ RealEstate(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "102 E 125th St, New York, NY 10035", neighborhood: "Spanish Harlem, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 13th, 2018"),
-                 RealEstate(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "315 103rd St, New York, NY 10029", neighborhood: "Spanish Harlem, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
-                 RealEstate(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "168 E 104th St New York, NY 10029", neighborhood: "Spanish Harlem, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 750, availableDate: "June 11th, 2018"),
-                  RealEstate(name: "apt4", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "351 E 119th St New York, NY 10035", neighborhood: "Spanish Harlem, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 750, availableDate: "June 11th, 2018"),
+    func spanishHarlem() -> [Listing] {
+        return [ Listing(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "102 E 125th St, New York, NY 10035", neighborhood: "Spanish Harlem, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 13th, 2018"),
+                 Listing(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "315 103rd St, New York, NY 10029", neighborhood: "Spanish Harlem, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
+                 Listing(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "168 E 104th St New York, NY 10029", neighborhood: "Spanish Harlem, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 750, availableDate: "June 11th, 2018"),
+                  Listing(name: "apt4", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "351 E 119th St New York, NY 10035", neighborhood: "Spanish Harlem, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 750, availableDate: "June 11th, 2018"),
         ]
     }
     
-    func morningsideHeights() -> [RealEstate] {
-        return [ RealEstate(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "3133 Broadway, New York, NY 10027", neighborhood: "Morningside Heights, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 13th, 2018"),
-                 RealEstate(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "536 W 113th St, New York, NY 10025", neighborhood: "Morningside Heights, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
-                 RealEstate(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "380 Riverside Dr New York, NY 10025", neighborhood: "Morningside Heights, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 750, availableDate: "June 11th, 2018")
+    func morningsideHeights() -> [Listing] {
+        return [ Listing(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "3133 Broadway, New York, NY 10027", neighborhood: "Morningside Heights, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 13th, 2018"),
+                 Listing(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "536 W 113th St, New York, NY 10025", neighborhood: "Morningside Heights, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
+                 Listing(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "380 Riverside Dr New York, NY 10025", neighborhood: "Morningside Heights, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 750, availableDate: "June 11th, 2018")
         ]
     }
     
-    func hellsKitchen() -> [RealEstate] {
-        return [ RealEstate(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "519 W 36th St, New York, NY 10018", neighborhood: "Hell's Kitchen, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 13th, 2018"),
-                 RealEstate(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "365 W 36th St, New York, NY 10018", neighborhood: "Hell's Kitchen, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
-                 RealEstate(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "353 W 39th St, New York, NY 10025", neighborhood: "Hell's Kitchen, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 750, availableDate: "June 11th, 2018")
+    func hellsKitchen() -> [Listing] {
+        return [ Listing(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "519 W 36th St, New York, NY 10018", neighborhood: "Hell's Kitchen, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 13th, 2018"),
+                 Listing(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "365 W 36th St, New York, NY 10018", neighborhood: "Hell's Kitchen, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
+                 Listing(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "353 W 39th St, New York, NY 10025", neighborhood: "Hell's Kitchen, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 750, availableDate: "June 11th, 2018")
         ]
     }
     
-    func flatironDistrict() -> [RealEstate] {
-        return [ RealEstate(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "44 W 24th St, New York, NY 10010", neighborhood: "Flatiron District, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 13th, 2018"),
-                 RealEstate(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "21 E 22nd St, New York, NY 10010", neighborhood: "Flatiron District, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
-                 RealEstate(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "48 W 21st St, New York, NY 10010", neighborhood: "Flatiron District, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 750, availableDate: "June 11th, 2018")
+    func flatironDistrict() -> [Listing] {
+        return [ Listing(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "44 W 24th St, New York, NY 10010", neighborhood: "Flatiron District, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 13th, 2018"),
+                 Listing(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "21 E 22nd St, New York, NY 10010", neighborhood: "Flatiron District, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
+                 Listing(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "48 W 21st St, New York, NY 10010", neighborhood: "Flatiron District, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 750, availableDate: "June 11th, 2018")
         ]
     }
     
-    func midtownWest() -> [RealEstate] {
-        return [ RealEstate(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "532 W 43rd St, New York, NY 10036", neighborhood: "Midtown West, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 13th, 2018"),
-                 RealEstate(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "428 W 44th St, New York, NY 10036", neighborhood: "Midtown West, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
-                 RealEstate(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "353 W 48th St, New York, NY 10036", neighborhood: "Midtown West, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 750, availableDate: "June 11th, 2018"),
-               RealEstate(name: "apt4", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "1023 6th Ave, New York, NY 10018", neighborhood: "Midtown West, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 750, availableDate: "June 11th, 2018"),
-               RealEstate(name: "apt5", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "145 W 46th St, New York, NY 10036", neighborhood: "Midtown West, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 750, availableDate: "June 11th, 2018")
+    func midtownWest() -> [Listing] {
+        return [ Listing(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "532 W 43rd St, New York, NY 10036", neighborhood: "Midtown West, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 13th, 2018"),
+                 Listing(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "428 W 44th St, New York, NY 10036", neighborhood: "Midtown West, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
+                 Listing(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "353 W 48th St, New York, NY 10036", neighborhood: "Midtown West, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 750, availableDate: "June 11th, 2018"),
+               Listing(name: "apt4", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "1023 6th Ave, New York, NY 10018", neighborhood: "Midtown West, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 750, availableDate: "June 11th, 2018"),
+               Listing(name: "apt5", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "145 W 46th St, New York, NY 10036", neighborhood: "Midtown West, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 750, availableDate: "June 11th, 2018")
         ]
     }
     
-    func midtownEast() -> [RealEstate] {
-        return [ RealEstate(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "111 E 56th St, New York, NY 10022", neighborhood: "Midtown East, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 13th, 2018"),
-                 RealEstate(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$1500", address: "253 E 50th St, New York, NY 10022", neighborhood: "Midtown East, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
-                 RealEstate(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$1900", address: "120 E 47th St, New York, NY 10017", neighborhood: "Midtown East, Manhattan", bedroomCount: 2, bathroomCount: 1, area: 550, availableDate: "June 11th, 2018"),
+    func midtownEast() -> [Listing] {
+        return [ Listing(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "111 E 56th St, New York, NY 10022", neighborhood: "Midtown East, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 13th, 2018"),
+                 Listing(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$1500", address: "253 E 50th St, New York, NY 10022", neighborhood: "Midtown East, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
+                 Listing(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$1900", address: "120 E 47th St, New York, NY 10017", neighborhood: "Midtown East, Manhattan", bedroomCount: 2, bathroomCount: 1, area: 550, availableDate: "June 11th, 2018"),
         ]
     }
     
-    func lowerEastside() -> [RealEstate] {
-        return [ RealEstate(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "74-100 Ridge St, New York, NY 10002", neighborhood: "Lower East Side, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 13th, 2018"),
-                 RealEstate(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$1500", address: "67-1 Norfolk St, New York, NY 10002", neighborhood: "Lower East Side, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
-                 RealEstate(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$1900", address: "350 Grand St, New York, NY 10002", neighborhood: "Lower East Side, Manhattan", bedroomCount: 2, bathroomCount: 1, area: 550, availableDate: "June 11th, 2018"),
-                 RealEstate(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$1900", address: "219-229 Clinton St, New York, NY 10002", neighborhood: "Lower East Side, Manhattan", bedroomCount: 2, bathroomCount: 1, area: 550, availableDate: "June 11th, 2018")
+    func lowerEastside() -> [Listing] {
+        return [ Listing(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "74-100 Ridge St, New York, NY 10002", neighborhood: "Lower East Side, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 13th, 2018"),
+                 Listing(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$1500", address: "67-1 Norfolk St, New York, NY 10002", neighborhood: "Lower East Side, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
+                 Listing(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$1900", address: "350 Grand St, New York, NY 10002", neighborhood: "Lower East Side, Manhattan", bedroomCount: 2, bathroomCount: 1, area: 550, availableDate: "June 11th, 2018"),
+                 Listing(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$1900", address: "219-229 Clinton St, New York, NY 10002", neighborhood: "Lower East Side, Manhattan", bedroomCount: 2, bathroomCount: 1, area: 550, availableDate: "June 11th, 2018")
         ]
     }
     
-    func gramercy() -> [RealEstate] {
-        return [ RealEstate(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "179 3rd Ave, New York, NY 10003", neighborhood: "Gramercy, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 13th, 2018"),
-                 RealEstate(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$1500", address: "152 E 21st St, New York, NY 10010", neighborhood: "Gramercy, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018")
+    func gramercy() -> [Listing] {
+        return [ Listing(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "179 3rd Ave, New York, NY 10003", neighborhood: "Gramercy, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 13th, 2018"),
+                 Listing(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$1500", address: "152 E 21st St, New York, NY 10010", neighborhood: "Gramercy, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018")
         ]
     }
     
-    func upperWestSide() -> [RealEstate] {
-        return [ RealEstate(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "215 W 106th St, New York, NY 10025", neighborhood: "Noho, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 13th, 2018"),
-                 RealEstate(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "328 W 86th St New York, NY 10024", neighborhood: "Upper West Side, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
-                 RealEstate(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "835 Columbus Ave, New York, NY 10025", neighborhood: "Upper West Side, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 750, availableDate: "June 11th, 2018"),
-                 RealEstate(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "261 W 70th St, New York, NY 10023", neighborhood: "Upper West Side, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 750, availableDate: "June 11th, 2018"),
-                 RealEstate(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "216 W 62nd St, New York, NY 10023", neighborhood: "Upper West Side, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 750, availableDate: "June 11th, 2018"),
-                  RealEstate(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "433 W 66th St, New York, NY 10069", neighborhood: "Upper West Side, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 750, availableDate: "June 11th, 2018"),
+    func upperWestSide() -> [Listing] {
+        return [ Listing(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "215 W 106th St, New York, NY 10025", neighborhood: "Noho, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 13th, 2018"),
+                 Listing(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "328 W 86th St New York, NY 10024", neighborhood: "Upper West Side, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
+                 Listing(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "835 Columbus Ave, New York, NY 10025", neighborhood: "Upper West Side, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 750, availableDate: "June 11th, 2018"),
+                 Listing(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "261 W 70th St, New York, NY 10023", neighborhood: "Upper West Side, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 750, availableDate: "June 11th, 2018"),
+                 Listing(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "216 W 62nd St, New York, NY 10023", neighborhood: "Upper West Side, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 750, availableDate: "June 11th, 2018"),
+                  Listing(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "433 W 66th St, New York, NY 10069", neighborhood: "Upper West Side, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 750, availableDate: "June 11th, 2018"),
         ]
     }
     
-    func westVillage() -> [RealEstate] {
-        return [ RealEstate(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "173 Christopher St, New York, NY 10014", neighborhood: "West Village, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 13th, 2018"),
-                 RealEstate(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "55 Bethune St, New York, NY 10014", neighborhood: "West Village, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
-                 RealEstate(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "220 W 13th St, New York, NY 10012", neighborhood: "West Village, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 750, availableDate: "June 11th, 2018"),
+    func westVillage() -> [Listing] {
+        return [ Listing(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "173 Christopher St, New York, NY 10014", neighborhood: "West Village, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 13th, 2018"),
+                 Listing(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "55 Bethune St, New York, NY 10014", neighborhood: "West Village, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
+                 Listing(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "220 W 13th St, New York, NY 10012", neighborhood: "West Village, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 750, availableDate: "June 11th, 2018"),
         ]
     }
 
-    func noho() -> [RealEstate] {
-        return [ RealEstate(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "430 Lafayette St, New York, NY 10003", neighborhood: "Noho, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 13th, 2018"),
-                 RealEstate(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "9 Great Jones St, New York, NY 10003", neighborhood: "Noho, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
-                 RealEstate(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "7 Bleecker St, New York, NY 10012", neighborhood: "Noho, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 750, availableDate: "June 11th, 2018"),
+    func noho() -> [Listing] {
+        return [ Listing(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "430 Lafayette St, New York, NY 10003", neighborhood: "Noho, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 13th, 2018"),
+                 Listing(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "9 Great Jones St, New York, NY 10003", neighborhood: "Noho, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
+                 Listing(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "7 Bleecker St, New York, NY 10012", neighborhood: "Noho, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 750, availableDate: "June 11th, 2018"),
         ]
     }
     
-    func twoBridges() -> [RealEstate] {
-        return [ RealEstate(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "34 Monroe St, New York, NY 10002", neighborhood: "Two Bridges, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 13th, 2018"),
-                 RealEstate(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$1500", address: "51 Monroe St, New York, NY 10002", neighborhood: "Two Bridges, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
-                 RealEstate(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$1900", address: "89 Catherine St, New York, NY 10038", neighborhood: "Two Bridges, Manhattan", bedroomCount: 2, bathroomCount: 1, area: 550, availableDate: "June 11th, 2018"),
+    func twoBridges() -> [Listing] {
+        return [ Listing(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "34 Monroe St, New York, NY 10002", neighborhood: "Two Bridges, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 13th, 2018"),
+                 Listing(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$1500", address: "51 Monroe St, New York, NY 10002", neighborhood: "Two Bridges, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
+                 Listing(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$1900", address: "89 Catherine St, New York, NY 10038", neighborhood: "Two Bridges, Manhattan", bedroomCount: 2, bathroomCount: 1, area: 550, availableDate: "June 11th, 2018"),
         ]
     }
+    
+    func nolita() -> [Listing] {
+        return [ Listing(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "31 Prince St\n" +
+            "New York, NY 10012", neighborhood: "Nolita, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 13th, 2018"),
+                 Listing(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$1500", address: "85 Kenmare St, New York, NY 10012", neighborhood: "Nolita, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
+                 Listing(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$1900", address: "6 Spring St, New York, NY 10012", neighborhood: "Nolita, Manhattan", bedroomCount: 2, bathroomCount: 1, area: 550, availableDate: "June 11th, 2018"),
+        ]
+    }
+    
+    func kipsBay() -> [Listing] {
+        return [ Listing(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "229 E 29th St\n" +
+            "New York, NY 10016", neighborhood: "Kips Bay, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 13th, 2018"),
+                 Listing(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$1500", address: "238 E 24th St, New York, NY 10010", neighborhood: "Kips Bay, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
+                 Listing(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$1900", address: "522 1st Avenue\n" +
+                    "New York, NY 10016", neighborhood: "Kips Bay, Manhattan", bedroomCount: 2, bathroomCount: 1, area: 550, availableDate: "June 11th, 2018"),
+        ]
+    }
+    
+    func upperEastSide() -> [Listing] {
+        return [ Listing(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "121 E 81st St\n" +
+            "New York, NY 10028\n", neighborhood: "Upper East Side, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 13th, 2018"),
+                 Listing(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$1500", address: "179 E 94th St\n" +
+                    "New York, NY 10128", neighborhood: "Upper East Side, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
+                 Listing(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$1900", address: "47 E 90th St\n" +
+                    "New York, NY 10128", neighborhood: "Upper East Side, Manhattan", bedroomCount: 2, bathroomCount: 1, area: 550, availableDate: "June 11th, 2018"),
+                 Listing(name: "apt4", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "307 E 87th St\n" +
+                    "New York, NY 10128", neighborhood: "Upper East Side, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 13th, 2018"),
+                 Listing(name: "apt5", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$1500", address: "9 E 77th St, New York, NY 10075", neighborhood: "Nolita, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
+                 Listing(name: "apt6", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$1900", address: "405 E 72nd St\n" +
+                    "New York, NY 10021\n", neighborhood: "Upper East Side, Manhattan", bedroomCount: 2, bathroomCount: 1, area: 550, availableDate: "June 11th, 2018"),
+                 Listing(name: "apt6", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$1900", address: "167 E 64th St\n" +
+                    "New York, NY 10065\n", neighborhood: "Upper East Side, Manhattan", bedroomCount: 2, bathroomCount: 1, area: 550, availableDate: "June 11th, 2018"),
+        ]
+    }
+    
+    func rooseveltIsland() -> [Listing] {
+        return [ Listing(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "625 Main St, New York, NY 10044", neighborhood: "Roosevelt Island, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 13th, 2018"),
+                 Listing(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$1500", address: "501 Main St, New York, NY 10044", neighborhood: "Roosevelt Island, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
+                 Listing(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "30 River Rd, New York, NY 10044", neighborhood: "Roosevelt Island, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 13th, 2018"),
+              
+        ]
+    }
+    
+    func cityHallArea() -> [Listing] {
+        return [ Listing(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$3400", address: "49 Chambers St\n" +
+            "New York, NY 10007", neighborhood: "City Hall Area, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 13th, 2018"),
+                 Listing(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$1500", address: "141 Worth St, New York, NY 10013", neighborhood: "City Hall Area, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
+                 
+        ]
+    }
+    
+    
+    
+    
+    
+    
     
 
     func checkBuildingPolygon(){

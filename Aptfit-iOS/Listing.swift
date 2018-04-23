@@ -9,15 +9,4 @@
 import Foundation
 import UIKit
 
-struct Listing {
-    var uuid: NSUUID
-    var address: String
-    var bedrooms: Int
-    var bathrooms: Int
-    var squarefeet: Int
-    var price: String
-    var neighborhood: String
-    var images: [UIImage]
-    var availablilityDate: String
-}
 

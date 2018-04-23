@@ -753,7 +753,8 @@ open class MFTMapView: UIView {
     internal func updatePolygonStyle(_ polygon: MFTPolygon){
         
         let dataLayer = self.dataLayers[polygon.uuid]
-        dataLayer?.clear()
+        //dataLayer?.clear()
+        mapView.update()
         guard let tgPolygon = polygon.tgPolygon else { return }
         if let layer = dataLayer {
             
@@ -798,6 +799,10 @@ open class MFTMapView: UIView {
             self.dataLayers[polygon.uuid] = layer
             layer.add(tgPolygon, withProperties: properties)
             
+            
+            
+            //mapView.update()
+            
         }
         
     }
@@ -818,8 +823,8 @@ open class MFTMapView: UIView {
             currentPolygons[rPolygon.tgPolygon!] = rPolygon
             currentAnnotations[rPolygon.uuid] = rPolygon
             
-            mapView.requestRender()
-            mapView.update()
+            //mapView.requestRender()
+           // mapView.update()
             
         }
         return rPolygon

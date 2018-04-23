@@ -134,10 +134,14 @@ strip_invalid_archs() {
 
 
 if [[ "$CONFIGURATION" == "Debug" ]]; then
+  install_framework "${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/AlamofireImage/AlamofireImage.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/Mapfit/Mapfit.framework"
   install_framework "${PODS_ROOT}/Tetragon-mobile/tetragon-release-1.1.1/TangramMap.framework"
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
+  install_framework "${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/AlamofireImage/AlamofireImage.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/Mapfit/Mapfit.framework"
   install_framework "${PODS_ROOT}/Tetragon-mobile/tetragon-release-1.1.1/TangramMap.framework"
 fi

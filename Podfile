@@ -7,6 +7,8 @@ target 'Aptfit-iOS' do
 
   # Pods for Aptfit-iOS
   pod 'Mapfit'
+  pod 'Alamofire'
+  pod 'AlamofireImage'
 
   target 'Aptfit-iOSUITests' do
     inherit! :search_paths

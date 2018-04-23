@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import Alamofire
+import AlamofireImage
 
 class ListingCollectionViewCell: UICollectionViewCell {
     
@@ -109,10 +111,10 @@ class ListingCollectionViewCell: UICollectionViewCell {
         self.neighborhoodLabel.font = UIFont.init(name: "Helvetica", size: 14)
         self.detailLabel.font = UIFont.init(name: "Helvetica", size: 14)
         
-        self.mainImage.image = listing.images[0]
+        //self.mainImage.image = listing.images[0]
         self.addressLabel.text = listing.address
         self.neighborhoodLabel.text = listing.neighborhood
-        self.detailLabel.text = "\(listing.bedrooms) BD  |  \(listing.bathrooms) BA  |  \(listing.squarefeet) SF"
+        self.detailLabel.text = "\(listing.bedroomCount) BD  |  \(listing.bathroomCount) BA  |  \(listing.area) SF"
 
     }
     
@@ -154,7 +156,7 @@ class ListingCollectionViewCell: UICollectionViewCell {
         self.mainImage.heightAnchor.constraint(equalToConstant: 107).isActive = true
         self.mainImage.topAnchor.constraint(equalTo: self.card.topAnchor).isActive = true
         self.mainImage.centerXAnchor.constraint(equalTo: self.card.centerXAnchor).isActive = true
-        self.mainImage.contentMode = .scaleToFill
+        self.mainImage.contentMode = .scaleAspectFill
         
         self.topBorder.widthAnchor.constraint(equalTo: self.card.widthAnchor).isActive = true
         self.topBorder.heightAnchor.constraint(equalToConstant: 2).isActive = true
@@ -184,10 +186,17 @@ class ListingCollectionViewCell: UICollectionViewCell {
         self.neighborhoodLabel.font = UIFont.init(name: "Helvetica", size: 12)
         self.detailLabel.font = UIFont.init(name: "Helvetica", size: 12)
         
-        self.mainImage.image = listing.images[0]
+        if let downloadURL = URL(string: listing.imageUrl) {
+            
+            mainImage.af_setImage(withURL: downloadURL)
+            
+        }
+        
+        
+        
         self.addressLabel.text = listing.address
         self.neighborhoodLabel.text = listing.neighborhood
-        self.detailLabel.text = "\(listing.bedrooms) BD  |  \(listing.bathrooms) BA  |  \(listing.squarefeet) SF"
+        self.detailLabel.text = "\(listing.bedroomCount) BD  |  \(listing.bathroomCount) BA  |  \(listing.area) SF"
         
     }
     

@@ -9,6 +9,8 @@
 import UIKit
 import Mapfit
 import CoreLocation
+import Alamofire
+import AlamofireImage
 
 class ListingDetailView: UIView {
     
@@ -31,6 +33,7 @@ class ListingDetailView: UIView {
     
     
     func setUpView(listing: Listing){
+        self.backgroundColor = .white
         self.addSubview(addressLabel)
         self.addSubview(availbilityDateLabel)
         self.addSubview(priceLabel)
@@ -41,6 +44,7 @@ class ListingDetailView: UIView {
         self.addSubview(mapView)
         self.addSubview(startBuildingButton)
         self.addSubview(madeWithLoveLabel)
+        
         
         self.addressLabel.translatesAutoresizingMaskIntoConstraints = false
         self.availbilityDateLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -138,10 +142,16 @@ class ListingDetailView: UIView {
         self.madeWithLoveLabel.textAlignment = .center
 
         self.addressLabel.text = listing.address
-        self.availbilityDateLabel.text = "Availibility: \(listing.availablilityDate)"
+        self.availbilityDateLabel.text = "Availibility: \(listing.availableDate)"
         self.priceLabel.text = "$\(listing.price)/mo"
-        self.placeDetailLabel.text = "\(listing.bedrooms) BD  |  \(listing.bathrooms) BA  |  \(listing.squarefeet) SF"
-        self.mainImageView.image = listing.images[0]
+        self.placeDetailLabel.text = "\(listing.bedroomCount) BD  |  \(listing.bathroomCount) BA  |  \(listing.area) SF"
+        
+        if let downloadURL = URL(string: listing.imageUrl) {
+            
+            mainImageView.af_setImage(withURL: downloadURL)
+            
+        }
+        
 
         self.neighborhoodLabel.text = listing.neighborhood
         
