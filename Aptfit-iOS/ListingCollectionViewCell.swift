@@ -37,8 +37,8 @@ class ListingCollectionViewCell: UICollectionViewCell {
         
         self.card.layer.cornerRadius = 9
 
-        self.card.clipsToBounds = true
-        self.card.layer.masksToBounds = true
+        self.card.clipsToBounds = false
+        self.card.layer.masksToBounds = false
         
         self.card.backgroundColor = .white
         self.card.layer.shadowRadius = 1
@@ -83,7 +83,7 @@ class ListingCollectionViewCell: UICollectionViewCell {
         self.priceButton.setBackgroundImage(#imageLiteral(resourceName: "priceButton"), for: .normal)
 
         
-        let attString = NSMutableAttributedString(string: "$\(listing.price)")
+        let attString = NSMutableAttributedString(string: "\(listing.price)")
         attString.addAttributes([NSAttributedStringKey.font : UIFont.init(name: "Helvetica", size: 14),NSAttributedStringKey.foregroundColor : UIColor.white ] , range: NSMakeRange(0, attString.length))
         
         self.priceButton.setAttributedTitle(attString, for: .normal)
@@ -111,7 +111,14 @@ class ListingCollectionViewCell: UICollectionViewCell {
         self.neighborhoodLabel.font = UIFont.init(name: "Helvetica", size: 14)
         self.detailLabel.font = UIFont.init(name: "Helvetica", size: 14)
         
-        //self.mainImage.image = listing.images[0]
+        if let downloadURL = URL(string: listing.imageUrl) {
+            
+            mainImage.af_setImage(withURL: downloadURL)
+            
+        }
+        
+        self.mainImage.clipsToBounds = true
+        
         self.addressLabel.text = listing.address
         self.neighborhoodLabel.text = listing.neighborhood
         self.detailLabel.text = "\(listing.bedroomCount) BD  |  \(listing.bathroomCount) BA  |  \(listing.area) SF"
@@ -157,6 +164,7 @@ class ListingCollectionViewCell: UICollectionViewCell {
         self.mainImage.topAnchor.constraint(equalTo: self.card.topAnchor).isActive = true
         self.mainImage.centerXAnchor.constraint(equalTo: self.card.centerXAnchor).isActive = true
         self.mainImage.contentMode = .scaleAspectFill
+        self.mainImage.clipsToBounds = true
         
         self.topBorder.widthAnchor.constraint(equalTo: self.card.widthAnchor).isActive = true
         self.topBorder.heightAnchor.constraint(equalToConstant: 2).isActive = true

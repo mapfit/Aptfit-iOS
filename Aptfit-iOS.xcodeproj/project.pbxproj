@@ -10,6 +10,8 @@
 		90CAFA7D5DCFA6B82B39727B /* Pods_Aptfit_iOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DAD5D7F754CD2FDBB11FC631 /* Pods_Aptfit_iOS.framework */; };
 		BF2FEF3820890E6F00FD5AD0 /* ListingDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF2FEF3720890E6F00FD5AD0 /* ListingDetailView.swift */; };
 		BF2FEF3E208A33B200FD5AD0 /* wof_nyc.json in Resources */ = {isa = PBXBuildFile; fileRef = BF2FEF3D208A33B200FD5AD0 /* wof_nyc.json */; };
+		BF6FF80A208E4D77001A172C /* mapfit-grayscale.yaml in Resources */ = {isa = PBXBuildFile; fileRef = BF6FF809208E4D77001A172C /* mapfit-grayscale.yaml */; };
+		BF6FF80C208E4D81001A172C /* mapfit-base-theme.yaml in Resources */ = {isa = PBXBuildFile; fileRef = BF6FF80B208E4D81001A172C /* mapfit-base-theme.yaml */; };
 		BF8764D620852F1E0086F9BC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF8764D520852F1E0086F9BC /* AppDelegate.swift */; };
 		BF8764D820852F1E0086F9BC /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF8764D720852F1E0086F9BC /* ViewController.swift */; };
 		BF8764DB20852F1E0086F9BC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BF8764D920852F1E0086F9BC /* Main.storyboard */; };
@@ -18,7 +20,6 @@
 		BF8764EB20852F200086F9BC /* Aptfit_iOSUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF8764EA20852F200086F9BC /* Aptfit_iOSUITests.swift */; };
 		BF8764FE208679510086F9BC /* NeighborhoodCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF8764FD208679510086F9BC /* NeighborhoodCollectionViewCell.swift */; };
 		BF876500208682D30086F9BC /* ListingCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF8764FF208682D30086F9BC /* ListingCollectionViewCell.swift */; };
-		BF876502208683000086F9BC /* Listing.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF876501208683000086F9BC /* Listing.swift */; };
 		DF19633E2FD4A28893384174 /* Pods_Aptfit_iOSUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3317129D88D57182264FBC10 /* Pods_Aptfit_iOSUITests.framework */; };
 /* End PBXBuildFile section */
 
@@ -40,6 +41,8 @@
 		8CC0ACA8C8652C00452FE298 /* Pods-Aptfit-iOSUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Aptfit-iOSUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-Aptfit-iOSUITests/Pods-Aptfit-iOSUITests.release.xcconfig"; sourceTree = "<group>"; };
 		BF2FEF3720890E6F00FD5AD0 /* ListingDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListingDetailView.swift; sourceTree = "<group>"; };
 		BF2FEF3D208A33B200FD5AD0 /* wof_nyc.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = wof_nyc.json; sourceTree = "<group>"; };
+		BF6FF809208E4D77001A172C /* mapfit-grayscale.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "mapfit-grayscale.yaml"; sourceTree = "<group>"; };
+		BF6FF80B208E4D81001A172C /* mapfit-base-theme.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "mapfit-base-theme.yaml"; sourceTree = "<group>"; };
 		BF8764D220852F1E0086F9BC /* Aptfit-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Aptfit-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF8764D520852F1E0086F9BC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		BF8764D720852F1E0086F9BC /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -52,7 +55,6 @@
 		BF8764EC20852F200086F9BC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BF8764FD208679510086F9BC /* NeighborhoodCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NeighborhoodCollectionViewCell.swift; sourceTree = "<group>"; };
 		BF8764FF208682D30086F9BC /* ListingCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListingCollectionViewCell.swift; sourceTree = "<group>"; };
-		BF876501208683000086F9BC /* Listing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Listing.swift; sourceTree = "<group>"; };
 		DAD5D7F754CD2FDBB11FC631 /* Pods_Aptfit_iOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Aptfit_iOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -125,7 +127,8 @@
 				BF2FEF3720890E6F00FD5AD0 /* ListingDetailView.swift */,
 				BF8764FD208679510086F9BC /* NeighborhoodCollectionViewCell.swift */,
 				BF8764FF208682D30086F9BC /* ListingCollectionViewCell.swift */,
-				BF876501208683000086F9BC /* Listing.swift */,
+				BF6FF809208E4D77001A172C /* mapfit-grayscale.yaml */,
+				BF6FF80B208E4D81001A172C /* mapfit-base-theme.yaml */,
 				BF8764D920852F1E0086F9BC /* Main.storyboard */,
 				BF8764DC20852F200086F9BC /* Assets.xcassets */,
 				BF8764DE20852F200086F9BC /* LaunchScreen.storyboard */,
@@ -230,9 +233,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BF6FF80C208E4D81001A172C /* mapfit-base-theme.yaml in Resources */,
 				BF2FEF3E208A33B200FD5AD0 /* wof_nyc.json in Resources */,
 				BF8764E020852F200086F9BC /* LaunchScreen.storyboard in Resources */,
 				BF8764DD20852F200086F9BC /* Assets.xcassets in Resources */,
+				BF6FF80A208E4D77001A172C /* mapfit-grayscale.yaml in Resources */,
 				BF8764DB20852F1E0086F9BC /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -361,7 +366,6 @@
 			files = (
 				BF8764D820852F1E0086F9BC /* ViewController.swift in Sources */,
 				BF8764FE208679510086F9BC /* NeighborhoodCollectionViewCell.swift in Sources */,
-				BF876502208683000086F9BC /* Listing.swift in Sources */,
 				BF8764D620852F1E0086F9BC /* AppDelegate.swift in Sources */,
 				BF2FEF3820890E6F00FD5AD0 /* ListingDetailView.swift in Sources */,
 				BF876500208682D30086F9BC /* ListingCollectionViewCell.swift in Sources */,
@@ -529,7 +533,10 @@
 				DEVELOPMENT_TEAM = 5G73R47QN9;
 				INFOPLIST_FILE = "Aptfit-iOS/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "Mapfit.Aptfit-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
@@ -546,7 +553,10 @@
 				DEVELOPMENT_TEAM = 5G73R47QN9;
 				INFOPLIST_FILE = "Aptfit-iOS/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "Mapfit.Aptfit-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
@@ -562,7 +572,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 5G73R47QN9;
 				INFOPLIST_FILE = "Aptfit-iOSUITests/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "Mapfit.Aptfit-iOSUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
@@ -579,7 +593,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 5G73R47QN9;
 				INFOPLIST_FILE = "Aptfit-iOSUITests/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "Mapfit.Aptfit-iOSUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;

@@ -24,6 +24,7 @@ class ListingDetailView: UIView {
     lazy var mapView: MFTMapView = MFTMapView()
     lazy var startBuildingButton: UIButton = UIButton()
     lazy var madeWithLoveLabel: UILabel = UILabel()
+    lazy var closeButton: UIButton = UIButton()
     var initialCenter: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: 40.73748242049333, longitude: -73.95733284034074)
     var textHeight: CGFloat = 17
     
@@ -34,6 +35,7 @@ class ListingDetailView: UIView {
     
     func setUpView(listing: Listing){
         self.backgroundColor = .white
+        self.addSubview(closeButton)
         self.addSubview(addressLabel)
         self.addSubview(availbilityDateLabel)
         self.addSubview(priceLabel)
@@ -45,7 +47,7 @@ class ListingDetailView: UIView {
         self.addSubview(startBuildingButton)
         self.addSubview(madeWithLoveLabel)
         
-        
+        self.closeButton.translatesAutoresizingMaskIntoConstraints = false
         self.addressLabel.translatesAutoresizingMaskIntoConstraints = false
         self.availbilityDateLabel.translatesAutoresizingMaskIntoConstraints = false
         self.priceLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -56,6 +58,15 @@ class ListingDetailView: UIView {
         self.mapView.translatesAutoresizingMaskIntoConstraints = false
         self.startBuildingButton.translatesAutoresizingMaskIntoConstraints = false
         self.madeWithLoveLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+
+        self.closeButton.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -15).isActive = true
+        self.closeButton.heightAnchor.constraint(equalToConstant: 25).isActive = true
+        self.closeButton.widthAnchor.constraint(equalToConstant: 25).isActive = true
+        self.closeButton.topAnchor.constraint(equalTo: self.topAnchor, constant: 5).isActive = true
+        self.closeButton.setImage(#imageLiteral(resourceName: "error"), for: .normal)
+        self.closeButton.addTarget(self, action: #selector(self.removeFromSuperview), for: .touchUpInside)
+        
         
         self.addressLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 15).isActive = true
         self.addressLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -15).isActive = true
@@ -115,11 +126,22 @@ class ListingDetailView: UIView {
         
         self.mapView.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
         self.mapView.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
-        self.mapView.heightAnchor.constraint(equalToConstant: 240).isActive = true
+        self.mapView.heightAnchor.constraint(equalToConstant: 220).isActive = true
         self.mapView.topAnchor.constraint(equalTo: self.neighborhoodLabel.bottomAnchor, constant: 12).isActive = true
         self.mapView.mapOptions.setTheme(theme: .grayScale)
         self.mapView.setZoom(zoomLevel: 14)
-        self.mapView.setCenter(position: initialCenter)
+        
+        for (key,value) in mapView.currentMarkers {
+            mapView.removeMarker(value)
+        }
+        
+       
+        self.mapView.addMarker(address: listing.address) { (marker, error) in
+            guard let marker = marker else { return }
+            self.mapView.setCenter(position: marker.getPosition())
+            self.mapView.setZoom(zoomLevel: 17, duration: 0.4)
+            
+        }
         
         self.startBuildingButton.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
         self.startBuildingButton.topAnchor.constraint(equalTo: self.mapView.bottomAnchor, constant: 13).isActive = true
@@ -143,7 +165,7 @@ class ListingDetailView: UIView {
 
         self.addressLabel.text = listing.address
         self.availbilityDateLabel.text = "Availibility: \(listing.availableDate)"
-        self.priceLabel.text = "$\(listing.price)/mo"
+        self.priceLabel.text = "\(listing.price)/mo"
         self.placeDetailLabel.text = "\(listing.bedroomCount) BD  |  \(listing.bathroomCount) BA  |  \(listing.area) SF"
         
         if let downloadURL = URL(string: listing.imageUrl) {

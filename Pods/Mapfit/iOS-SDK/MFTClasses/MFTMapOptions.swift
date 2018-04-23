@@ -151,7 +151,7 @@ public class MFTMapOptions  {
         
         self.mapTheme = .custom
         try? mapView?.loadCustomThemeAsync(customTheme)
-        
+       
         
     }
     

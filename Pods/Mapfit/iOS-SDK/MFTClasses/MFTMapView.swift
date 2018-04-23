@@ -577,10 +577,13 @@ open class MFTMapView: UIView {
                             }
                             let markerPolygon = self.addPolygon([polygon])
                             markerPolygon?.mapView = self
+                            
                             if var annotations = marker?.subAnnotations {
                                 annotations["building"] = markerPolygon
+                                
                             }else{
-                                marker?.subAnnotations = ["building" : markerPolygon as! MFTAnnotation] 
+                                marker?.subAnnotations = ["building" : markerPolygon as! MFTAnnotation]
+                               
                             }
                             
                         }
@@ -613,8 +616,21 @@ open class MFTMapView: UIView {
         guard let tgMarker = marker.tgMarker else { return }
         currentMarkers.removeValue(forKey: tgMarker)
         currentAnnotations.removeValue(forKey: marker.uuid)
+       
+        
+        if let building = marker.getBuildingPolygon() {
+            DispatchQueue.main.async {
+                self.removePolygon(building)
+            }
+            
+        }
+        
         mapView.markerRemove(tgMarker)
-        marker.subAnnotations?.removeAll()
+        
+        
+        
+        
+       
     }
     
     public func removePolyline(_ polyline: MFTPolyline) {
@@ -630,13 +646,18 @@ open class MFTMapView: UIView {
     
     public func removePolygon(_ polygon: MFTPolygon) {
         guard let tgPolygon = polygon.tgPolygon else { return }
+
+        if let dataLayer = dataLayers[polygon.uuid] {
+           let value = dataLayer.remove()
+            print(value)
+            print(value)
+            print(value)
+        }
+        
+        dataLayers.removeValue(forKey: polygon.uuid)
         currentPolygons.removeValue(forKey: tgPolygon)
         currentAnnotations.removeValue(forKey: polygon.uuid)
-        let dataLayer = dataLayers[polygon.uuid]
-        dataLayers.removeValue(forKey: polygon.uuid)
-        dataLayer?.remove()
-        dataLayer?.clear()
-        
+
     }
     
     
@@ -694,6 +715,7 @@ open class MFTMapView: UIView {
             
             self.dataLayers[rPolygon.uuid] = dataLayer
             dataLayer.add(tgPolygon, withProperties: ["type":"polygon", "uuid" : "\(rPolygon.uuid)"])
+           
             currentPolygons[rPolygon.tgPolygon!] = rPolygon
             currentAnnotations[rPolygon.uuid] = rPolygon
             
@@ -708,6 +730,7 @@ open class MFTMapView: UIView {
         
         let dataLayer = self.dataLayers[polyline.uuid]
         dataLayer?.clear()
+        
         guard let tgPolyline = polyline.tgPolyline else { return }
         if let layer = dataLayer {
             
@@ -753,8 +776,8 @@ open class MFTMapView: UIView {
     internal func updatePolygonStyle(_ polygon: MFTPolygon){
         
         let dataLayer = self.dataLayers[polygon.uuid]
-        //dataLayer?.clear()
-        mapView.update()
+        dataLayer?.clear()
+      
         guard let tgPolygon = polygon.tgPolygon else { return }
         if let layer = dataLayer {
             
@@ -768,7 +791,7 @@ open class MFTMapView: UIView {
             }
             
             if options.drawOrder != Int.min {
-                properties["polygon_order"] = String(describing: options.drawOrder)
+                properties["polygon_order"] = String(describing: options.drawOrder + 1)
                 properties["line_order"] = String(describing: options.drawOrder - 1)
             }
 

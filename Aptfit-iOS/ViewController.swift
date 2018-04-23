@@ -9,6 +9,7 @@
 import UIKit
 import Mapfit
 import CoreLocation
+import TangramMap
 
 
 
@@ -53,6 +54,7 @@ class ViewController: UIViewController {
     lazy var neighborhoods: [String] = ["New York City", "Chelsea"]
     lazy var mapView: MFTMapView = MFTMapView()
     lazy var areaPolygons: [String : MFTPolygon] = [:]
+    var currentAreaPolygon: MFTPolygon?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -77,6 +79,13 @@ class ViewController: UIViewController {
         view.addSubview(mapView)
         view.sendSubview(toBack: mapView)
         mapView.mapOptions.setTheme(theme: .grayScale)
+        
+        
+        if let path = Bundle.main.path(forResource: "mapfit-grayscale", ofType: "yaml")  {
+            mapView.mapOptions.setCustomTheme("file:\\\(path)")
+        }
+        
+        
         
         mapView.translatesAutoresizingMaskIntoConstraints = false
         
@@ -172,7 +181,7 @@ class ViewController: UIViewController {
         toggleViewButton.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: 10).isActive = true
         
         toggleViewButton.imageView?.contentMode = .scaleAspectFit
-        toggleViewButton.setImage(#imageLiteral(resourceName: "mapView"), for: .normal)
+        toggleViewButton.setImage(#imageLiteral(resourceName: "listView"), for: .normal)
         
         toggleViewButton.addTarget(self, action: #selector(filterButtonTapped), for: .touchUpInside)
     }
@@ -183,10 +192,10 @@ class ViewController: UIViewController {
 
     
     if mapViewIsEnabled {
-        listingHorizontalCollectionView?.reloadData()
-        mapViewIsEnabled = false
-        toggleViewButton?.setImage(#imageLiteral(resourceName: "listView"), for: .normal)
         
+        mapViewIsEnabled = false
+        toggleViewButton?.setImage(#imageLiteral(resourceName: "mapView"), for: .normal)
+        vCollectionView.reloadData()
         UIView.animate(withDuration: 0.2) {
             self.view.sendSubview(toBack: hCollectionView)
             self.view.sendSubview(toBack: self.mapView)
@@ -194,10 +203,10 @@ class ViewController: UIViewController {
         }
         
     } else {
+        
         listingHorizontalCollectionView?.reloadData()
         mapViewIsEnabled = true
-        toggleViewButton?.setImage(#imageLiteral(resourceName: "mapView"), for: .normal)
-        
+        toggleViewButton?.setImage(#imageLiteral(resourceName: "listView"), for: .normal)
         
         UIView.animate(withDuration: 0.2) {
          self.view.sendSubview(toBack: vCollectionView)
@@ -264,8 +273,15 @@ class ViewController: UIViewController {
     }
     
    @objc func leftBarItemTapped(){
+    self.currentAreaPolygon?.polygonOptions?.strokeColor = "#8a94ff"
+    self.currentAreaPolygon?.polygonOptions?.fillColor = "#404353FF"
+    }
+    
+    func resetPolygonArea(){
+        
         
     }
+    
     
    @objc func rightBarItemTapped(){
         
@@ -327,8 +343,7 @@ extension ViewController: UICollectionViewDataSource, UICollectionViewDelegate, 
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if collectionView == listingHorizontalCollectionView {
-            
+        if collectionView == listingHorizontalCollectionView || collectionView == listingVerticalCollectionView{
             self.setUpListingDetailView()
             listingDetailView?.setUpView(listing: listings[indexPath.row])
         }
@@ -371,6 +386,10 @@ extension ViewController {
                     let areaPolygon = mapView.addPolygon([polygon])
                     guard let neighborhood = feature.properties["name"] else { return }
                     areaPolygons[neighborhood] = areaPolygon
+                    
+                    areaPolygon?.polygonOptions?.strokeColor = "#8a94ff"
+                    areaPolygon?.polygonOptions?.fillColor = "#404353FF"
+                    areaPolygon?.polygonOptions?.strokeWidth = 3
 
                 }
 
@@ -420,18 +439,27 @@ extension ViewController: MapPolygonSelectDelegate {
     
     func mapView(_ view: MFTMapView, didSelectPolygon polygon: MFTPolygon, atScreenPosition position: CGPoint) {
        
+    
+        
         //change color not working
         if currentlyShowingArea == areaPolygons.someKey(forValue: polygon) {
             return
         }
         
-       mapView.mapView.markerRemoveAll()
+        DispatchQueue.main.async(execute: {
+            self.currentAreaPolygon?.polygonOptions?.strokeColor = "#8a94ff"
+            self.currentAreaPolygon?.polygonOptions?.fillColor = "#404353FF"
+            self.currentAreaPolygon = polygon
+        })
+        
+        
+        
         for marker in self.currentlyShowingMakers {
-            if let polygon = marker.buildingPolygon {
-                mapView.removePolygon(polygon)
-            }
+           mapView.removeMarker(marker)
+        
         }
-
+        
+        currentlyShowingMakers = []
         
         guard let key = areaPolygons.someKey(forValue: polygon) else { return }
         currentlyShowingArea = key
@@ -504,8 +532,10 @@ extension ViewController: MapPolygonSelectDelegate {
             listingsToShow = rooseveltIsland()
         case "Flatiron District":
             listingsToShow = flatironDistrict()
+        case "Inwood":
+            listingsToShow = inwood()
         default:
-            print("Not Financial District")
+            print("polygon not found")
         }
         
         listings = listingsToShow
@@ -517,12 +547,25 @@ extension ViewController: MapPolygonSelectDelegate {
             self.mapView.addMarker(address: listing.address) { (marker, error) in
                 let image = self.textToImage(drawText: listing.price, inImage: #imageLiteral(resourceName: "customBlackMarker"), atPoint: CGPoint(x: 0, y: 3))
                 marker?.setIcon(image)
+                marker?.markerOptions?.anchorPosition = .center
+                
                 marker?.markerOptions?.setWidth(width: 67)
-                marker?.markerOptions?.setHeight(height: 50)
+                marker?.markerOptions?.setHeight(height: 40)
                 if let marker = marker { self.currentlyShowingMakers.append(marker)}
+                
+                guard let options = marker?.getBuildingPolygon()?.polygonOptions else { return }
+                options.strokeColor = "#000000"
+                options.fillColor = "#274A4A4A"
+                
+                polygon.polygonOptions?.strokeColor = "#000000"
+                polygon.polygonOptions?.fillColor = "#274A4A4A"
+               
             }
         
         }
+    
+      
+    
     }
     
     
@@ -549,6 +592,19 @@ extension Dictionary where Value: Equatable {
 }
 
 extension ViewController {
+    
+    func inwood() -> [Listing] {
+        return [
+            Listing(name: "apt1", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$2,400", address: "639 W 204th St, New York, NY 10034", neighborhood: "Inwood, Manhattan", bedroomCount: 2, bathroomCount: 1, area: 350, availableDate: "July 14th, 2018"),
+            Listing(name: "apt2", imageUrl:  "https://images.unsplash.com/photo-1494526585095-c41746248156?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=fd170b4cebb0b97e6337529754defcf7&auto=format&fit=crop&w=1024&q=80", price: "$3,200", address: "124 Fulton St, New York, NY 10038", neighborhood: "Inwood, Manhattan", bedroomCount: 2, bathroomCount: 1, area: 900, availableDate: "June 16th, 2018"),
+            Listing(name: "apt3", imageUrl: "https://images.unsplash.com/photo-1494526585095-c41746248156?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=fd170b4cebb0b97e6337529754defcf7&auto=format&fit=crop&w=1024&q=80", price: "$5,300", address: "112 Sherman Ave, New York, NY 10034", neighborhood: "Inwood, Manhattan", bedroomCount: 2, bathroomCount: 1, area: 900, availableDate: "June 16th, 2018"),
+            Listing(name: "apt4", imageUrl: "https://images.unsplash.com/photo-1494526585095-c41746248156?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=fd170b4cebb0b97e6337529754defcf7&auto=format&fit=crop&w=1024&q=80", price: "$5,300", address: "585 W 214th St, New York, NY 10034", neighborhood: "Inwood, Manhattan", bedroomCount: 2, bathroomCount: 1, area: 900, availableDate: "June 16th, 2018")
+        ]
+    }
+
+    
+    
+    
     
     func financialDistrict() -> [Listing] {
         return [
