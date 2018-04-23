@@ -43,14 +43,14 @@ class ViewController: UIViewController {
     var layout = SnappingCollectionViewLayout()
     var toggleViewButton: UIButton?
     var mapViewIsEnabled: Bool = true
-    var initialCenter: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: 40.73748242049333, longitude: -73.95733284034074)
+    var initialCenter: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: 40.741611201768606, longitude: -73.979310412348568)
     
     lazy var listings: [Listing] = [Listing]()
     lazy var currentlyShowingArea = String()
     lazy var currentlyShowingMakers = [MFTMarker]()
     
     
-    lazy var neighborhoods: [String] = ["New York City","Chelsea"]
+    lazy var neighborhoods: [String] = ["New York City", "Chelsea"]
     lazy var mapView: MFTMapView = MFTMapView()
     lazy var areaPolygons: [String : MFTPolygon] = [:]
     
@@ -64,10 +64,9 @@ class ViewController: UIViewController {
         setUpMap()
         
         setUpHorizontalCollectionView()
-        //setUpVerticalCollectionView()
+        setUpVerticalCollectionView()
         
         setUpFilterToggle()
-        checkBuildingPolygon()
         mapView.polygonSelectDelegate = self
         //setUpListingDetailView()
         
@@ -83,29 +82,12 @@ class ViewController: UIViewController {
         
         mapView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
         mapView.widthAnchor.constraint(equalTo: self.view.widthAnchor).isActive = true
-        //mapView.heightAnchor.constraint(equalTo: self.view.heightAnchor).isActive = true
         guard let neighborhoodCollectionView = self.neighborhoodCollectionView else { return }
         mapView.topAnchor.constraint(equalTo: neighborhoodCollectionView.bottomAnchor).isActive = true
         
-        mapView.setZoom(zoomLevel: 14)
+        mapView.setZoom(zoomLevel: 12)
         mapView.setCenter(position: initialCenter)
         
-        mapView.addMarker(address: "119 w 24th street ny, ny 10011") { (marker, error) in
-            let image = self.textToImage(drawText: "$2,500", inImage: #imageLiteral(resourceName: "customBlueMarker"), atPoint: CGPoint(x: 0, y: 3))
-            marker?.setIcon(image)
-            marker?.markerOptions?.setWidth(width: 67)
-            marker?.markerOptions?.setHeight(height: 50)
-            let polygon = marker?.getBuildingPolygon()
-            polygon?.polygonOptions?.strokeColor = "#4353FF"
-            polygon?.polygonOptions?.fillColor = "#154353FF"
-            polygon?.polygonOptions?.strokeWidth = 3
-            
-            
-        }
-        
-//        let update = TGSceneUpdate(path: "global.show_transit", value: "true")
-//
-//        mapView.mapView.updateSceneAsync([update])
     }
     
     func setUpNavBar(){
@@ -198,8 +180,10 @@ class ViewController: UIViewController {
   @objc func filterButtonTapped(){
     guard let vCollectionView = self.listingVerticalCollectionView else { return }
     guard let hCollectionView = self.listingHorizontalCollectionView else { return }
+
     
     if mapViewIsEnabled {
+        listingHorizontalCollectionView?.reloadData()
         mapViewIsEnabled = false
         toggleViewButton?.setImage(#imageLiteral(resourceName: "listView"), for: .normal)
         
@@ -210,6 +194,7 @@ class ViewController: UIViewController {
         }
         
     } else {
+        listingHorizontalCollectionView?.reloadData()
         mapViewIsEnabled = true
         toggleViewButton?.setImage(#imageLiteral(resourceName: "mapView"), for: .normal)
         
@@ -451,14 +436,14 @@ extension ViewController: MapPolygonSelectDelegate {
         guard let key = areaPolygons.someKey(forValue: polygon) else { return }
         currentlyShowingArea = key
         
-        
+        neighborhoods[1] = key
+        neighborhoodCollectionView?.reloadData()
         
         var listingsToShow = [Listing]()
         
         switch key {
         case "Financial District":
             listingsToShow = financialDistrict()
-            
         case "Greenwich Village":
             listingsToShow = greenwichVillage()
         case "Battery Park City District":
@@ -814,20 +799,6 @@ extension ViewController {
                  Listing(name: "apt2", imageUrl: "https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=91b874ce453385d8867cc98ee582fee3&auto=format&fit=crop&w=1024&q=80", price: "$1500", address: "141 Worth St, New York, NY 10013", neighborhood: "City Hall Area, Manhattan", bedroomCount: 3, bathroomCount: 2, area: 350, availableDate: "June 16th, 2018"),
                  
         ]
-    }
-    
-    
-    
-    
-    
-    
-    
-
-    func checkBuildingPolygon(){
-        
-        self.mapView.addMarker(address: "89 Catherine St, New York, NY 10038") { (marker, error) in
-            
-        }
     }
     
 }
