@@ -11,7 +11,13 @@ import Mapfit
 import CoreLocation
 import TangramMap
 
-
+enum AptfitColors: String {
+    case black = "#000000"
+    case transparentBlack = "#274A4A4A"
+    case purple = "#8a94ff"
+    case transparentPurple = "#404353FF"
+    
+}
 
 struct LocationJson : Decodable {
     var type: String
@@ -49,27 +55,30 @@ class ViewController: UIViewController {
     lazy var listings: [Listing] = [Listing]()
     lazy var currentlyShowingArea = String()
     lazy var currentlyShowingMakers = [MFTMarker]()
+    lazy var markers: [Listing : MFTMarker] = [:]
+    var selectedMarker: MFTMarker?
     
     
     lazy var neighborhoods: [String] = ["New York City", "Chelsea"]
     lazy var mapView: MFTMapView = MFTMapView()
     lazy var areaPolygons: [String : MFTPolygon] = [:]
     var currentAreaPolygon: MFTPolygon?
+    var firstTap = true
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        createDummyData()
         showNeighborhoods()
         setUpNavBar()
         setUpNeighborhoodCollectionView()
         
         setUpMap()
         
-        setUpHorizontalCollectionView()
+        
         setUpVerticalCollectionView()
         
         setUpFilterToggle()
         mapView.polygonSelectDelegate = self
+        mapView.markerSelectDelegate = self
         //setUpListingDetailView()
         
         // Do any additional setup after loading the view, typically from a nib.
@@ -85,8 +94,6 @@ class ViewController: UIViewController {
             mapView.mapOptions.setCustomTheme("file:\\\(path)")
         }
         
-        
-        
         mapView.translatesAutoresizingMaskIntoConstraints = false
         
         mapView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
@@ -96,6 +103,8 @@ class ViewController: UIViewController {
         
         mapView.setZoom(zoomLevel: 12)
         mapView.setCenter(position: initialCenter)
+        
+        mapView.mapOptions.isTransitEnabled = true 
         
     }
     
@@ -159,7 +168,8 @@ class ViewController: UIViewController {
         detailView.widthAnchor.constraint(equalTo: self.view.widthAnchor).isActive = true
         
         guard let neighborhoodCollectionView = self.neighborhoodCollectionView else { return }
-        detailView.topAnchor.constraint(equalTo: neighborhoodCollectionView.bottomAnchor).isActive = true
+        
+        detailView.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true
         detailView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
         
         detailView.setUpView(listing: listings[0])
@@ -273,14 +283,9 @@ class ViewController: UIViewController {
     }
     
    @objc func leftBarItemTapped(){
-    self.currentAreaPolygon?.polygonOptions?.strokeColor = "#8a94ff"
-    self.currentAreaPolygon?.polygonOptions?.fillColor = "#404353FF"
+
     }
     
-    func resetPolygonArea(){
-        
-        
-    }
     
     
    @objc func rightBarItemTapped(){
@@ -355,19 +360,7 @@ extension ViewController: UICollectionViewDataSource, UICollectionViewDelegate, 
 }
 
 extension ViewController {
-    
-    func createDummyData(){
-        
-//        var listing = Listing(uuid: NSUUID.init(), bedrooms: 1, price: "2,450", address: "180 West 20th Street, Unit 2C", bathrooms: 1, squarefeet: 700, neighborhood: "Chelsea, Manhattan", images: [#imageLiteral(resourceName: "dummyApt")], availablilityDate: "June 14th, 2018")
-//
-//        self.listings.append(listing)
-//        self.listings.append(listing)
-//        self.listings.append(listing)
-//        self.listings.append(listing)
-//        self.listings.append(listing)
-//        self.listings.append(listing)
-    }
-    
+
     func showNeighborhoods(){
         
         if let path = Bundle.main.path(forResource: "wof_nyc", ofType: "json") {
@@ -435,14 +428,65 @@ extension ViewController {
     
 }
 
+extension ViewController: MapMarkerSelectDelegate {
+    func mapView(_ view: MFTMapView, didSelectMarker marker: MFTMarker, atScreenPosition position: CGPoint) {
+        
+        DispatchQueue.main.async {
+            if let oldMarker = self.selectedMarker {
+                if let listing = self.markers.someKey(forValue: oldMarker){
+                    let backToBlack = self.textToImage(drawText: listing.price, inImage: #imageLiteral(resourceName: "customBlackMarker"), atPoint: CGPoint(x: 0, y: 3))
+                    oldMarker.setIcon(backToBlack)
+                }
+                
+                
+                oldMarker.getBuildingPolygon()?.polygonOptions?.strokeColor = AptfitColors.black.rawValue
+                oldMarker.getBuildingPolygon()?.polygonOptions?.fillColor = AptfitColors.transparentBlack.rawValue
+            }
+      
+            
+            if let newMarker = self.markers.someKey(forValue: marker) {
+                let image = self.textToImage(drawText: newMarker.price, inImage: #imageLiteral(resourceName: "customBlueMarker"), atPoint: CGPoint(x: 0, y: 3))
+                marker.setIcon(image)
+            
+                let row = self.listings.index(of: newMarker) as! Int
+                self.listingHorizontalCollectionView?.scrollToItem(at: IndexPath(row: row, section: 0), at: .centeredHorizontally, animated: true)
+            }
+
+            
+            
+           
+            marker.getBuildingPolygon()?.polygonOptions?.strokeColor = AptfitColors.purple.rawValue
+            marker.getBuildingPolygon()?.polygonOptions?.fillColor = AptfitColors.transparentPurple.rawValue
+            let center = self.computeOffsetToPoint(from: marker.getPosition(), distance: -10, heading: 0)
+            self.mapView.setZoom(zoomLevel: 18, duration: 0.2)
+            self.mapView.setCenter(position: center, duration: 0.2)
+            self.mapView.setRotation(rotationValue: 0, duration: 0.2)
+            
+            self.selectedMarker = marker
+        }
+    
+    }
+    
+    
+}
+
 extension ViewController: MapPolygonSelectDelegate {
     
     func mapView(_ view: MFTMapView, didSelectPolygon polygon: MFTPolygon, atScreenPosition position: CGPoint) {
-       
-    
-        
         //change color not working
-        if currentlyShowingArea == areaPolygons.someKey(forValue: polygon) {
+        self.mapView.setZoom(zoomLevel: 13, duration: 0.2)
+        
+        if firstTap {
+            setUpHorizontalCollectionView()
+            if let key = areaPolygons.someKey(forValue: polygon) {
+                currentlyShowingArea = key
+            }
+            firstTap = false
+        }
+
+        
+        
+        if currentlyShowingArea == areaPolygons.someKey(forValue: polygon) && firstTap {
             return
         }
         
@@ -463,6 +507,16 @@ extension ViewController: MapPolygonSelectDelegate {
         
         guard let key = areaPolygons.someKey(forValue: polygon) else { return }
         currentlyShowingArea = key
+        
+        var builder = MFTLatLngBounds.Builder()
+        for location in areaPolygons[currentlyShowingArea]!.points[0] {
+            builder.add(latLng: location)
+        }
+        let bounds = builder.build()
+        
+        let offsetCenter = computeOffsetToPoint(from: bounds.center, distance: -1000, heading: 0)
+        mapView.setCenter(position: offsetCenter, duration: 0.4)
+        
         
         neighborhoods[1] = key
         neighborhoodCollectionView?.reloadData()
@@ -559,6 +613,8 @@ extension ViewController: MapPolygonSelectDelegate {
                 
                 polygon.polygonOptions?.strokeColor = "#000000"
                 polygon.polygonOptions?.fillColor = "#274A4A4A"
+                self.markers[listing] = marker
+                
                
             }
         
@@ -573,17 +629,7 @@ extension ViewController: MapPolygonSelectDelegate {
 
 
 
-struct Listing {
-var name: String
-var imageUrl: String
-var price: String
-var address: String
-var neighborhood: String
-var bedroomCount: Int
-var bathroomCount: Int
-var area: Int
-var availableDate: String
-}
+
 
 extension Dictionary where Value: Equatable {
     func someKey(forValue val: Value) -> Key? {
@@ -859,7 +905,28 @@ extension ViewController {
     
 }
 
+extension ViewController {
+    func computeOffsetToPoint(from: CLLocationCoordinate2D, distance: Double, heading: Double) -> CLLocationCoordinate2D {
+    let dist = distance / 6371009
+    let radHeading = heading.degreesToRadians
+    // http://williams.best.vwh.net/avform.htm#LL
+    let fromLat = from.latitude.degreesToRadians
+    let fromLng = from.longitude.degreesToRadians
+    let cosDistance = cos(dist)
+    let sinDistance = sin(dist)
+    let sinFromLat = sin(fromLat)
+    let cosFromLat = cos(fromLat)
+    let sinLat = cosDistance * sinFromLat + sinDistance * cosFromLat * cos(radHeading)
+    let dLng = atan2(sinDistance * cosFromLat * sin(radHeading), cosDistance - sinFromLat * sinLat)
+    
+    return CLLocationCoordinate2D(latitude: asin(sinLat).radiansToDegrees, longitude: (fromLng + dLng).radiansToDegrees)
+    }
+}
 
+extension FloatingPoint {
+    var degreesToRadians: Self { return self * .pi / 180 }
+    var radiansToDegrees: Self { return self * 180 / .pi }
+}
 
 class SnappingCollectionViewLayout: UICollectionViewFlowLayout {
     

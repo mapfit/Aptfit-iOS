@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Pods/Mapfit/iOS-SDK/MFTClasses/MFTMapView.swift"
-            timestampString = "546215416.938905"
+            timestampString = "546299883.163166"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "507"
-            endingLineNumber = "507"
+            startingLineNumber = "520"
+            endingLineNumber = "520"
             landmarkName = "removeAnnotation(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -26,11 +26,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Pods/Mapfit/iOS-SDK/MFTClasses/MFTMapView.swift"
-            timestampString = "546215416.939234"
+            timestampString = "546299883.163219"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "616"
-            endingLineNumber = "616"
+            startingLineNumber = "629"
+            endingLineNumber = "629"
             landmarkName = "removeMarker(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -42,11 +42,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Pods/Mapfit/iOS-SDK/MFTClasses/MFTMapView.swift"
-            timestampString = "546215416.939317"
+            timestampString = "546299883.163258"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "650"
-            endingLineNumber = "650"
+            startingLineNumber = "663"
+            endingLineNumber = "663"
             landmarkName = "removePolygon(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -58,11 +58,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Pods/Mapfit/iOS-SDK/MFTClasses/MFTMapView.swift"
-            timestampString = "546215416.939374"
+            timestampString = "546299883.163294"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "732"
-            endingLineNumber = "732"
+            startingLineNumber = "745"
+            endingLineNumber = "745"
             landmarkName = "updatePolylineStyle(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -73,13 +73,13 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Aptfit-iOS/ViewController.swift"
-            timestampString = "546215416.939429"
+            filePath = "Pods/Mapfit/iOS-SDK/MFTClasses/MFTMapView.swift"
+            timestampString = "546299883.163329"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "83"
-            endingLineNumber = "83"
-            landmarkName = "setUpMap()"
+            startingLineNumber = "1570"
+            endingLineNumber = "1570"
+            landmarkName = "loadCustomStyleSheetAsync(_:locale:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -89,13 +89,13 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Pods/Mapfit/iOS-SDK/MFTClasses/MFTMapView.swift"
-            timestampString = "546215416.940195"
+            filePath = "Aptfit-iOS/ListingDetailView.swift"
+            timestampString = "546299883.163366"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1557"
-            endingLineNumber = "1557"
-            landmarkName = "loadCustomStyleSheetAsync(_:locale:)"
+            startingLineNumber = "159"
+            endingLineNumber = "159"
+            landmarkName = "setUpView(listing:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

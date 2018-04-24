@@ -20,6 +20,7 @@
 		BF8764EB20852F200086F9BC /* Aptfit_iOSUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF8764EA20852F200086F9BC /* Aptfit_iOSUITests.swift */; };
 		BF8764FE208679510086F9BC /* NeighborhoodCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF8764FD208679510086F9BC /* NeighborhoodCollectionViewCell.swift */; };
 		BF876500208682D30086F9BC /* ListingCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF8764FF208682D30086F9BC /* ListingCollectionViewCell.swift */; };
+		BFA6706C208FC29000347C4C /* Listing.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFA6706B208FC29000347C4C /* Listing.swift */; };
 		DF19633E2FD4A28893384174 /* Pods_Aptfit_iOSUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3317129D88D57182264FBC10 /* Pods_Aptfit_iOSUITests.framework */; };
 /* End PBXBuildFile section */
 
@@ -55,6 +56,7 @@
 		BF8764EC20852F200086F9BC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BF8764FD208679510086F9BC /* NeighborhoodCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NeighborhoodCollectionViewCell.swift; sourceTree = "<group>"; };
 		BF8764FF208682D30086F9BC /* ListingCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListingCollectionViewCell.swift; sourceTree = "<group>"; };
+		BFA6706B208FC29000347C4C /* Listing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Listing.swift; sourceTree = "<group>"; };
 		DAD5D7F754CD2FDBB11FC631 /* Pods_Aptfit_iOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Aptfit_iOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -127,6 +129,7 @@
 				BF2FEF3720890E6F00FD5AD0 /* ListingDetailView.swift */,
 				BF8764FD208679510086F9BC /* NeighborhoodCollectionViewCell.swift */,
 				BF8764FF208682D30086F9BC /* ListingCollectionViewCell.swift */,
+				BFA6706B208FC29000347C4C /* Listing.swift */,
 				BF6FF809208E4D77001A172C /* mapfit-grayscale.yaml */,
 				BF6FF80B208E4D81001A172C /* mapfit-base-theme.yaml */,
 				BF8764D920852F1E0086F9BC /* Main.storyboard */,
@@ -368,6 +371,7 @@
 				BF8764FE208679510086F9BC /* NeighborhoodCollectionViewCell.swift in Sources */,
 				BF8764D620852F1E0086F9BC /* AppDelegate.swift in Sources */,
 				BF2FEF3820890E6F00FD5AD0 /* ListingDetailView.swift in Sources */,
+				BFA6706C208FC29000347C4C /* Listing.swift in Sources */,
 				BF876500208682D30086F9BC /* ListingCollectionViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

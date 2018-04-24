@@ -21,6 +21,12 @@ public protocol LocationUpdateDelegate: class {
 
 public class MFTMapOptions  {
     
+    
+    public var isTransitEnabled: Bool {
+        didSet {
+            mapView?.toggleTransitLines()
+        }
+    }
     public var is3DBuildingsEnabled: Bool {
         didSet {
             mapView?.toggle3DBuildings()
@@ -218,6 +224,7 @@ public class MFTMapOptions  {
         self.mapView = mapView
         self.firstRun = 0
         self.is3DBuildingsEnabled = false
+        self.isTransitEnabled = false
         
     }
     
@@ -239,6 +246,7 @@ public class MFTMapOptions  {
         self.locationManager = MFTLocationProvider()
         self.firstRun = 0
         self.is3DBuildingsEnabled = false
+        self.isTransitEnabled = false
         
     }
 }

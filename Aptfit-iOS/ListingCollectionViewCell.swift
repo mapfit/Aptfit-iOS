@@ -195,12 +195,8 @@ class ListingCollectionViewCell: UICollectionViewCell {
         self.detailLabel.font = UIFont.init(name: "Helvetica", size: 12)
         
         if let downloadURL = URL(string: listing.imageUrl) {
-            
             mainImage.af_setImage(withURL: downloadURL)
-            
         }
-        
-        
         
         self.addressLabel.text = listing.address
         self.neighborhoodLabel.text = listing.neighborhood

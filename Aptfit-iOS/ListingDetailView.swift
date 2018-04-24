@@ -27,13 +27,27 @@ class ListingDetailView: UIView {
     lazy var closeButton: UIButton = UIButton()
     var initialCenter: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: 40.73748242049333, longitude: -73.95733284034074)
     var textHeight: CGFloat = 17
+    var marker: MFTMarker?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        
+        if let marker = self.marker {
+            self.mapView.removeMarker(marker)
+        }
+    }
+    
+    
+    
+    @objc func closeOut(){
+        self.removeFromSuperview()
     }
     
     
     func setUpView(listing: Listing){
+  
+        
+        
         self.backgroundColor = .white
         self.addSubview(closeButton)
         self.addSubview(addressLabel)
@@ -60,18 +74,22 @@ class ListingDetailView: UIView {
         self.madeWithLoveLabel.translatesAutoresizingMaskIntoConstraints = false
         
 
-        self.closeButton.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -15).isActive = true
+        self.closeButton.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10).isActive = true
         self.closeButton.heightAnchor.constraint(equalToConstant: 25).isActive = true
         self.closeButton.widthAnchor.constraint(equalToConstant: 25).isActive = true
-        self.closeButton.topAnchor.constraint(equalTo: self.topAnchor, constant: 5).isActive = true
-        self.closeButton.setImage(#imageLiteral(resourceName: "error"), for: .normal)
-        self.closeButton.addTarget(self, action: #selector(self.removeFromSuperview), for: .touchUpInside)
+        self.closeButton.topAnchor.constraint(equalTo: self.topAnchor, constant: 75).isActive = true
+        self.closeButton.setImage(#imageLiteral(resourceName: "back"), for: .normal)
+        self.closeButton.setTitle("Back", for: .normal)
+        self.closeButton.setTitleColor(.darkGray, for: .normal)
+        self.closeButton.addTarget(self, action: #selector(closeOut), for: .touchUpInside)
+        self.closeButton.titleLabel?.textAlignment = .left
+        self.closeButton.titleLabel?.font =  UIFont(name: "Helvetica", size: 14)
         
         
         self.addressLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 15).isActive = true
         self.addressLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -15).isActive = true
         self.addressLabel.heightAnchor.constraint(equalToConstant: textHeight).isActive = true
-        self.addressLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 9).isActive = true
+        self.addressLabel.topAnchor.constraint(equalTo: self.closeButton.bottomAnchor, constant: 9).isActive = true
         
         self.addressLabel.textColor = .black
         self.addressLabel.font =  UIFont(name: "Helvetica", size: 17)
@@ -129,17 +147,28 @@ class ListingDetailView: UIView {
         self.mapView.heightAnchor.constraint(equalToConstant: 220).isActive = true
         self.mapView.topAnchor.constraint(equalTo: self.neighborhoodLabel.bottomAnchor, constant: 12).isActive = true
         self.mapView.mapOptions.setTheme(theme: .grayScale)
-        self.mapView.setZoom(zoomLevel: 14)
+        self.mapView.setZoom(zoomLevel: 13)
         
-        for (key,value) in mapView.currentMarkers {
-            mapView.removeMarker(value)
+        self.mapView.mapOptions.isPanEnabled = false
+        self.mapView.mapOptions.isPinchEnabled = false
+        self.mapView.mapOptions.isRotateEnabled = false
+        self.mapView.mapOptions.isTransitEnabled = true
+        
+        let parent = self.parentViewController as! ViewController
+        let neighborhood = listing.neighborhood.components(separatedBy: ",")
+        if let polygon = parent.areaPolygons[neighborhood[0]] {
+           let neighborhoodPolygon = self.mapView.addPolygon(polygon.points)
+            
+            neighborhoodPolygon?.polygonOptions?.strokeColor = AptfitColors.black.rawValue
+            neighborhoodPolygon?.polygonOptions?.fillColor = AptfitColors.transparentBlack.rawValue
+        
         }
-        
-       
+
         self.mapView.addMarker(address: listing.address) { (marker, error) in
             guard let marker = marker else { return }
             self.mapView.setCenter(position: marker.getPosition())
-            self.mapView.setZoom(zoomLevel: 17, duration: 0.4)
+            //self.mapView.setZoom(zoomLevel: 13, duration: 0.4)
+            self.marker = marker
             
         }
         
@@ -169,25 +198,15 @@ class ListingDetailView: UIView {
         self.placeDetailLabel.text = "\(listing.bedroomCount) BD  |  \(listing.bathroomCount) BA  |  \(listing.area) SF"
         
         if let downloadURL = URL(string: listing.imageUrl) {
-            
             mainImageView.af_setImage(withURL: downloadURL)
-            
         }
-        
-
         self.neighborhoodLabel.text = listing.neighborhood
-        
     }
     
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    
-    
-    
-    
     
     
     /*
@@ -198,4 +217,17 @@ class ListingDetailView: UIView {
     }
     */
 
+}
+
+extension UIView {
+    var parentViewController: UIViewController? {
+        var parentResponder: UIResponder? = self
+        while parentResponder != nil {
+            parentResponder = parentResponder!.next
+            if let viewController = parentResponder as? UIViewController {
+                return viewController
+            }
+        }
+        return nil
+    }
 }

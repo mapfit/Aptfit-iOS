@@ -378,7 +378,7 @@ global:
 
     ####### ALL SHOW/HIDE VARIABLES #######
 
-    show_transit:                   false                # public transit visibility
+    show_transit:                   true                 # public transit visibility
     show_3d_buildings:              false                # 3D building visibility
     show_airports:                  true                 # airport visibility
     show_urbanization:              false                # show urbanized areas
@@ -545,11 +545,11 @@ styles:
         blend_order: 3
     sdk-line-overlay:
         base: lines
-        blend: translucent
+        blend: overlay
         blend_order: 2
     sdk-polygon-overlay:
         base: polygons
-        blend: translucent
+        blend: overlay
         blend_order: 2
 
 fonts:
@@ -2844,7 +2844,7 @@ layers:
             #         draw:
             #             lines:
             #                 outline:
-            #                     # except bridges and tunnels, their outlines should also self-sort
+            #                     # except bridges and tunnels, tƒheir outlines should also self-sort
             #                     order: function() { return feature.sort_rank || 305; }
 
     transit-basemap:

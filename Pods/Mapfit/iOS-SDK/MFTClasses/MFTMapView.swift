@@ -381,6 +381,19 @@ open class MFTMapView: UIView {
     }
     
     /**
+     Changes the map view to fit the given coordinate bounds.
+     - parameter bounds: The bounds coordinates for the new view.
+     - parameter padding: The minimum padding that will be visible around the given coordinate bounds.
+     - parameter duration: The time it takes to move to the center location. 
+     */
+    
+    public func setLatLngBounds(bounds: MFTLatLngBounds, padding: Float, duration: Float){
+        let pair = bounds.getVisibleBounds(viewWidth: Float(mapView.view.bounds.width * UIScreen.main.scale), viewHeight: Float(mapView.view.bounds.height * UIScreen.main.scale), padding: padding)
+        self.setCenter(position: CLLocationCoordinate2D(latitude: pair.0.latitude, longitude: pair.0.longitude), duration: duration)
+        self.setZoom(zoomLevel: pair.1)
+    }
+    
+    /**
      Returns the bounds coordinates of the map.
      - returns: The bounds coordinates for the map.
      */
@@ -1611,6 +1624,12 @@ extension MFTMapView {
 extension MFTMapView {
     internal func toggle3DBuildings(){
         let update = TGSceneUpdate(path: "global.show_3d_buildings", value: "\(mapOptions.is3DBuildingsEnabled)")
+        
+        mapView.updateSceneAsync([update])
+    }
+    
+    internal func toggleTransitLines(){
+        let update = TGSceneUpdate(path: "global.show_transit", value: "\(mapOptions.isTransitEnabled)")
         
         mapView.updateSceneAsync([update])
     }
