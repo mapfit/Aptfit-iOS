@@ -21,6 +21,9 @@
 		BF8764FE208679510086F9BC /* NeighborhoodCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF8764FD208679510086F9BC /* NeighborhoodCollectionViewCell.swift */; };
 		BF876500208682D30086F9BC /* ListingCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF8764FF208682D30086F9BC /* ListingCollectionViewCell.swift */; };
 		BFA6706C208FC29000347C4C /* Listing.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFA6706B208FC29000347C4C /* Listing.swift */; };
+		BFA6706E2090F0C500347C4C /* HarmoniaSansStd-SemiBd.otf in Resources */ = {isa = PBXBuildFile; fileRef = BFA6706D2090F0C500347C4C /* HarmoniaSansStd-SemiBd.otf */; };
+		BFA670702091257600347C4C /* LocationJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFA6706F2091257600347C4C /* LocationJSON.swift */; };
+		BFA670722091266400347C4C /* SnappingCollectionViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFA670712091266400347C4C /* SnappingCollectionViewLayout.swift */; };
 		DF19633E2FD4A28893384174 /* Pods_Aptfit_iOSUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3317129D88D57182264FBC10 /* Pods_Aptfit_iOSUITests.framework */; };
 /* End PBXBuildFile section */
 
@@ -57,6 +60,9 @@
 		BF8764FD208679510086F9BC /* NeighborhoodCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NeighborhoodCollectionViewCell.swift; sourceTree = "<group>"; };
 		BF8764FF208682D30086F9BC /* ListingCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListingCollectionViewCell.swift; sourceTree = "<group>"; };
 		BFA6706B208FC29000347C4C /* Listing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Listing.swift; sourceTree = "<group>"; };
+		BFA6706D2090F0C500347C4C /* HarmoniaSansStd-SemiBd.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "HarmoniaSansStd-SemiBd.otf"; sourceTree = "<group>"; };
+		BFA6706F2091257600347C4C /* LocationJSON.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationJSON.swift; sourceTree = "<group>"; };
+		BFA670712091266400347C4C /* SnappingCollectionViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnappingCollectionViewLayout.swift; sourceTree = "<group>"; };
 		DAD5D7F754CD2FDBB11FC631 /* Pods_Aptfit_iOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Aptfit_iOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -125,11 +131,14 @@
 			isa = PBXGroup;
 			children = (
 				BF8764D520852F1E0086F9BC /* AppDelegate.swift */,
+				BFA670712091266400347C4C /* SnappingCollectionViewLayout.swift */,
 				BF8764D720852F1E0086F9BC /* ViewController.swift */,
+				BFA6706F2091257600347C4C /* LocationJSON.swift */,
 				BF2FEF3720890E6F00FD5AD0 /* ListingDetailView.swift */,
 				BF8764FD208679510086F9BC /* NeighborhoodCollectionViewCell.swift */,
 				BF8764FF208682D30086F9BC /* ListingCollectionViewCell.swift */,
 				BFA6706B208FC29000347C4C /* Listing.swift */,
+				BFA6706D2090F0C500347C4C /* HarmoniaSansStd-SemiBd.otf */,
 				BF6FF809208E4D77001A172C /* mapfit-grayscale.yaml */,
 				BF6FF80B208E4D81001A172C /* mapfit-base-theme.yaml */,
 				BF8764D920852F1E0086F9BC /* Main.storyboard */,
@@ -237,6 +246,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BF6FF80C208E4D81001A172C /* mapfit-base-theme.yaml in Resources */,
+				BFA6706E2090F0C500347C4C /* HarmoniaSansStd-SemiBd.otf in Resources */,
 				BF2FEF3E208A33B200FD5AD0 /* wof_nyc.json in Resources */,
 				BF8764E020852F200086F9BC /* LaunchScreen.storyboard in Resources */,
 				BF8764DD20852F200086F9BC /* Assets.xcassets in Resources */,
@@ -369,8 +379,10 @@
 			files = (
 				BF8764D820852F1E0086F9BC /* ViewController.swift in Sources */,
 				BF8764FE208679510086F9BC /* NeighborhoodCollectionViewCell.swift in Sources */,
+				BFA670722091266400347C4C /* SnappingCollectionViewLayout.swift in Sources */,
 				BF8764D620852F1E0086F9BC /* AppDelegate.swift in Sources */,
 				BF2FEF3820890E6F00FD5AD0 /* ListingDetailView.swift in Sources */,
+				BFA670702091257600347C4C /* LocationJSON.swift in Sources */,
 				BFA6706C208FC29000347C4C /* Listing.swift in Sources */,
 				BF876500208682D30086F9BC /* ListingCollectionViewCell.swift in Sources */,
 			);

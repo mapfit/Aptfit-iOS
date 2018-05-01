@@ -184,7 +184,7 @@ open class MFTMapView: UIView {
         self.setUpView(frame: frame, position: self.position ) // Default statue of liberty
         
         self.setDelegates()
-        //self.setupAttribution()
+        self.setupAttribution()
         self.setUpMapControls()
         self.accessibilityIdentifier = "mapView"
     }
@@ -924,9 +924,9 @@ open class MFTMapView: UIView {
     
     private func setupAttribution(){
         attributionBtn = UIButton()
-        //attributionBtn.setTitle("Powered by Mapfit", for: .normal)
+        attributionBtn.setTitle("Powered by Mapfit", for: .normal)
         
-        //attributionBtn.setImage(UIImage(named: "Watermark_Day_Sm.png", in: Bundle.houseStylesBundle(), compatibleWith: nil), for: .normal)
+        attributionBtn.setImage(UIImage(named: "Watermark_Day_Sm.png", in: Bundle.houseStylesBundle(), compatibleWith: nil), for: .normal)
         attributionBtn.imageView?.contentMode = .scaleAspectFit
         attributionBtn.setTitleColor(.darkGray, for: .normal)
         attributionBtn.titleLabel?.font = UIFont.systemFont(ofSize: 14)
@@ -941,11 +941,18 @@ open class MFTMapView: UIView {
         self.attributionBtn.widthAnchor.constraint(equalToConstant: 38.6).isActive = true
         self.attributionButtonBottomConstraint = attributionBtn.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: initialAttributionBottomConstraintConstant)
         
-        if mapOptions.mapTheme == .day {
+        
+        switch mapOptions.mapTheme {
+        case .day:
             attributionBtn.setImage(UIImage(named: "Watermark_Day_Sm.png", in: Bundle.houseStylesBundle(), compatibleWith: nil), for: .normal)
-        }else{
+        case .night:
             attributionBtn.setImage(UIImage(named: "Watermark_Night_Sm.png", in: Bundle.houseStylesBundle(), compatibleWith: nil), for: .normal)
+        case .grayScale:
+            attributionBtn.setImage(UIImage(named: "Watermark_Day_Sm.png", in: Bundle.houseStylesBundle(), compatibleWith: nil), for: .normal)
+        case .custom:
+            attributionBtn.setImage(UIImage(named: "Watermark_Day_Sm.png", in: Bundle.houseStylesBundle(), compatibleWith: nil), for: .normal)
         }
+
         
         attributionButtonBottomConstraint.isActive = true
         
@@ -1534,11 +1541,17 @@ extension MFTMapView {
     internal func loadMapfitStyleAsync(_ theme: MFTMapTheme, locale: Locale) throws {
         mapOptions.mapTheme = theme
         
-        if mapOptions.mapTheme == .day {
+        switch mapOptions.mapTheme {
+        case .day:
             attributionBtn.setImage(UIImage(named: "Watermark_Day_Sm.png", in: Bundle.houseStylesBundle(), compatibleWith: nil), for: .normal)
-        }else{
+        case .night:
             attributionBtn.setImage(UIImage(named: "Watermark_Night_Sm.png", in: Bundle.houseStylesBundle(), compatibleWith: nil), for: .normal)
+        case .grayScale:
+            attributionBtn.setImage(UIImage(named: "Watermark_Day_Sm.png", in: Bundle.houseStylesBundle(), compatibleWith: nil), for: .normal)
+        case .custom:
+            attributionBtn.setImage(UIImage(named: "Watermark_Day_Sm.png", in: Bundle.houseStylesBundle(), compatibleWith: nil), for: .normal)
         }
+
         
         self.locale = locale
         

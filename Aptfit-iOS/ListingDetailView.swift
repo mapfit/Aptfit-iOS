@@ -29,26 +29,24 @@ class ListingDetailView: UIView {
     var textHeight: CGFloat = 17
     var marker: MFTMarker?
     
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         
+    }
+    
+    @objc func closeOut(){
         if let marker = self.marker {
             self.mapView.removeMarker(marker)
         }
-    }
-    
-    
-    
-    @objc func closeOut(){
         self.removeFromSuperview()
     }
     
     
     func setUpView(listing: Listing){
-  
-        
-        
         self.backgroundColor = .white
+
+        
         self.addSubview(closeButton)
         self.addSubview(addressLabel)
         self.addSubview(availbilityDateLabel)
@@ -60,7 +58,7 @@ class ListingDetailView: UIView {
         self.addSubview(mapView)
         self.addSubview(startBuildingButton)
         self.addSubview(madeWithLoveLabel)
-        
+
         self.closeButton.translatesAutoresizingMaskIntoConstraints = false
         self.addressLabel.translatesAutoresizingMaskIntoConstraints = false
         self.availbilityDateLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -75,16 +73,16 @@ class ListingDetailView: UIView {
         
 
         self.closeButton.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10).isActive = true
-        self.closeButton.heightAnchor.constraint(equalToConstant: 25).isActive = true
-        self.closeButton.widthAnchor.constraint(equalToConstant: 25).isActive = true
-        self.closeButton.topAnchor.constraint(equalTo: self.topAnchor, constant: 75).isActive = true
-        self.closeButton.setImage(#imageLiteral(resourceName: "back"), for: .normal)
-        self.closeButton.setTitle("Back", for: .normal)
-        self.closeButton.setTitleColor(.darkGray, for: .normal)
-        self.closeButton.addTarget(self, action: #selector(closeOut), for: .touchUpInside)
-        self.closeButton.titleLabel?.textAlignment = .left
-        self.closeButton.titleLabel?.font =  UIFont(name: "Helvetica", size: 14)
+        self.closeButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
+        self.closeButton.widthAnchor.constraint(equalToConstant: 55).isActive = true
         
+        self.closeButton.topAnchor.constraint(equalTo: self.topAnchor, constant: 60).isActive = true
+       
+        
+        self.closeButton.setImage(#imageLiteral(resourceName: "back"), for: .normal)
+        self.closeButton.imageView?.contentMode = .scaleAspectFit
+        self.closeButton.addTarget(self, action: #selector(closeOut), for: .touchUpInside)
+
         
         self.addressLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 15).isActive = true
         self.addressLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -15).isActive = true
@@ -92,7 +90,7 @@ class ListingDetailView: UIView {
         self.addressLabel.topAnchor.constraint(equalTo: self.closeButton.bottomAnchor, constant: 9).isActive = true
         
         self.addressLabel.textColor = .black
-        self.addressLabel.font =  UIFont(name: "Helvetica", size: 17)
+        self.addressLabel.font =  UIFont(name: aptfitFont, size: 17)
 
         self.availbilityDateLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 15).isActive = true
         self.availbilityDateLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -15).isActive = true
@@ -100,7 +98,7 @@ class ListingDetailView: UIView {
         self.availbilityDateLabel.topAnchor.constraint(equalTo: self.addressLabel.bottomAnchor, constant: 11).isActive = true
         
         self.availbilityDateLabel.textColor = .gray
-        self.availbilityDateLabel.font =  UIFont(name: "Helvetica", size: 14)
+        self.availbilityDateLabel.font =  UIFont(name: aptfitFont, size: 14)
         
         self.priceLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 15).isActive = true
         self.priceLabel.widthAnchor.constraint(equalToConstant: 130).isActive = true
@@ -108,7 +106,7 @@ class ListingDetailView: UIView {
         self.priceLabel.topAnchor.constraint(equalTo: self.availbilityDateLabel.bottomAnchor, constant: 13).isActive = true
         
         self.priceLabel.textColor = .black
-        self.priceLabel.font =  UIFont(name: "Helvetica", size: 14)
+        self.priceLabel.font =  UIFont(name: aptfitFont, size: 14)
         
         self.placeDetailLabel.widthAnchor.constraint(equalToConstant: 200).isActive = true
         self.placeDetailLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16).isActive = true
@@ -116,7 +114,7 @@ class ListingDetailView: UIView {
         self.placeDetailLabel.heightAnchor.constraint(equalToConstant: 19).isActive = true
         
         self.placeDetailLabel.textColor = .black
-        self.placeDetailLabel.font =  UIFont(name: "Helvetica", size: 14)
+        self.placeDetailLabel.font =  UIFont(name: aptfitFont, size: 14)
         self.placeDetailLabel.textAlignment = .right
 
         self.mainImageView.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
@@ -130,29 +128,34 @@ class ListingDetailView: UIView {
         self.neighborhoodTitleLabel.topAnchor.constraint(equalTo: self.mainImageView.bottomAnchor, constant: 12).isActive = true
         
         self.neighborhoodTitleLabel.text = "Neighborhood"
-        self.neighborhoodTitleLabel.font = UIFont.init(name: "Helvetica", size: 17)
+        self.neighborhoodTitleLabel.font = UIFont.init(name: aptfitFont, size: 17)
         
         self.neighborhoodLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 15).isActive = true
         self.neighborhoodLabel.widthAnchor.constraint(equalToConstant: 300).isActive = true
+        
+        //OpenGL
         self.neighborhoodLabel.heightAnchor.constraint(equalToConstant: textHeight).isActive = true
         self.neighborhoodLabel.topAnchor.constraint(equalTo: self.neighborhoodTitleLabel.bottomAnchor, constant: 5).isActive = true
         
-        self.neighborhoodLabel.font = UIFont.init(name: "Helvetica", size: 14)
+        self.neighborhoodLabel.font = UIFont.init(name: aptfitFont, size: 14)
         self.neighborhoodLabel.textColor = .gray
-        
-        
         
         self.mapView.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
         self.mapView.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
-        self.mapView.heightAnchor.constraint(equalToConstant: 220).isActive = true
+        self.mapView.heightAnchor.constraint(equalToConstant: 200).isActive = true
         self.mapView.topAnchor.constraint(equalTo: self.neighborhoodLabel.bottomAnchor, constant: 12).isActive = true
         self.mapView.mapOptions.setTheme(theme: .grayScale)
         self.mapView.setZoom(zoomLevel: 13)
         
-        self.mapView.mapOptions.isPanEnabled = false
-        self.mapView.mapOptions.isPinchEnabled = false
-        self.mapView.mapOptions.isRotateEnabled = false
+        self.mapView.mapOptions.isPanEnabled = true
+        self.mapView.mapOptions.isPinchEnabled = true
+        self.mapView.mapOptions.isRotateEnabled = true
         self.mapView.mapOptions.isTransitEnabled = true
+        self.mapView.mapOptions.isRecenterControlVisible = true
+        self.mapView.mapOptions.isZoomControlVisible = true
+        self.mapView.mapOptions.isCompassVisible = false
+        
+        mapView.doubleTapGestureDelegate = self.parentViewController as! MapDoubleTapGestureDelegate
         
         let parent = self.parentViewController as! ViewController
         let neighborhood = listing.neighborhood.components(separatedBy: ",")
@@ -183,12 +186,12 @@ class ListingDetailView: UIView {
         self.madeWithLoveLabel.widthAnchor.constraint(equalTo: self.widthAnchor).isActive = true
         
         self.startBuildingButton.setTitleColor(UIColor.blue, for: .normal)
-        self.startBuildingButton.titleLabel?.font = UIFont(name: "Helvetica", size: 14)
+        self.startBuildingButton.titleLabel?.font = UIFont(name: aptfitFont, size: 14)
         self.startBuildingButton.setTitle("Start building with this template", for: .normal)
         self.startBuildingButton.titleLabel?.textAlignment = .center
 
         self.madeWithLoveLabel.textColor = .darkGray
-        self.madeWithLoveLabel.font =  UIFont(name: "Helvetica", size: 14)
+        self.madeWithLoveLabel.font =  UIFont(name: aptfitFont, size: 14)
         self.madeWithLoveLabel.text = "Made with ❤️ by the Mapfit team."
         self.madeWithLoveLabel.textAlignment = .center
 

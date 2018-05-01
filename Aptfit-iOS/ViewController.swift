@@ -9,8 +9,9 @@
 import UIKit
 import Mapfit
 import CoreLocation
-import TangramMap
 
+
+//Color used in demo application
 enum AptfitColors: String {
     case black = "#000000"
     case transparentBlack = "#274A4A4A"
@@ -19,31 +20,16 @@ enum AptfitColors: String {
     
 }
 
-struct LocationJson : Decodable {
-    var type: String
-    var features: [Features]
-    
-}
-struct Features : Decodable {
-    var type: String
-    var properties: [String: String]
-    var geometry: Geometry
-}
-
-struct Geometry: Decodable {
-    var type : String
-    var coordinates : [[[[Double]]]]
-    
-    
-    
-}
+//Default font
+let aptfitFont = "HarmoniaSansStd-SemiBd"
 
 class ViewController: UIViewController {
 
     var neighborhoodCollectionView: UICollectionView?
     var listingVerticalCollectionView: UICollectionView?
+    
     var listingHorizontalCollectionView: UICollectionView?
-    var listingDetailView: ListingDetailView?
+    var listingDetailView: ListingDetailView = ListingDetailView()
     var scrollView: UIScrollView = UIScrollView()
     
     
@@ -70,42 +56,33 @@ class ViewController: UIViewController {
         showNeighborhoods()
         setUpNavBar()
         setUpNeighborhoodCollectionView()
-        
         setUpMap()
-        
-        
         setUpVerticalCollectionView()
-        
         setUpFilterToggle()
         mapView.polygonSelectDelegate = self
         mapView.markerSelectDelegate = self
-        //setUpListingDetailView()
-        
-        // Do any additional setup after loading the view, typically from a nib.
+        mapView.doubleTapGestureDelegate = self
     }
     
     func setUpMap(){
+    
+        
         view.addSubview(mapView)
         view.sendSubview(toBack: mapView)
         mapView.mapOptions.setTheme(theme: .grayScale)
-        
-        
         if let path = Bundle.main.path(forResource: "mapfit-grayscale", ofType: "yaml")  {
             mapView.mapOptions.setCustomTheme("file:\\\(path)")
         }
-        
         mapView.translatesAutoresizingMaskIntoConstraints = false
-        
         mapView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
         mapView.widthAnchor.constraint(equalTo: self.view.widthAnchor).isActive = true
         guard let neighborhoodCollectionView = self.neighborhoodCollectionView else { return }
         mapView.topAnchor.constraint(equalTo: neighborhoodCollectionView.bottomAnchor).isActive = true
-        
         mapView.setZoom(zoomLevel: 12)
         mapView.setCenter(position: initialCenter)
+        mapView.mapOptions.isTransitEnabled = true
         
-        mapView.mapOptions.isTransitEnabled = true 
-        
+        mapView.addBorders(edges: [.top], color: .darkGray, thickness: 0.5)
     }
     
     func setUpNavBar(){
@@ -131,69 +108,60 @@ class ViewController: UIViewController {
         
     }
     
+    
+    
     func setUpNeighborhoodCollectionView(){
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
         self.neighborhoodCollectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        
         guard let neighborhoodCollectionView = self.neighborhoodCollectionView else { return }
-        
-        
         neighborhoodCollectionView.delegate = self
         neighborhoodCollectionView.dataSource = self
-        
-        
         neighborhoodCollectionView.register(NeighborhoodCollectionViewCell.self, forCellWithReuseIdentifier: "neighborhoodCell")
-        
         view.addSubview(neighborhoodCollectionView)
         neighborhoodCollectionView.translatesAutoresizingMaskIntoConstraints = false
-
         neighborhoodCollectionView.heightAnchor.constraint(equalToConstant: 40.5).isActive = true
-        neighborhoodCollectionView.widthAnchor.constraint(equalTo: self.view.widthAnchor, multiplier: 0.6).isActive = true
-        neighborhoodCollectionView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 15).isActive = true
+        neighborhoodCollectionView.widthAnchor.constraint(equalTo: self.view.widthAnchor).isActive = true
+        neighborhoodCollectionView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
         neighborhoodCollectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
-        
         neighborhoodCollectionView.backgroundColor = UIColor.white
+        
+        
+        //neighborhoodCollectionView.layer.borderWidth = 1
+        //neighborhoodCollectionView.layer.borderColor = UIColor.darkGray.cgColor
+        
+        self.toggleViewButton = UIButton()
+        guard let toggleViewButton = self.toggleViewButton else { return }
+        view.addSubview(toggleViewButton)
+        view.bringSubview(toFront: toggleViewButton)
+        toggleViewButton.translatesAutoresizingMaskIntoConstraints = false
+        //toggleViewButton.leadingAnchor.constraint(equalTo: neighborhoodCollectionView.trailingAnchor, constant: -10).isActive = true
+        toggleViewButton.heightAnchor.constraint(equalTo: neighborhoodCollectionView.heightAnchor).isActive = true
+        toggleViewButton.centerYAnchor.constraint(equalTo: neighborhoodCollectionView.centerYAnchor).isActive = true
+        toggleViewButton.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -10).isActive = true
+        toggleViewButton.imageView?.contentMode = .scaleAspectFit
+        toggleViewButton.setImage(#imageLiteral(resourceName: "listView"), for: .normal)
+        toggleViewButton.addTarget(self, action: #selector(filterButtonTapped), for: .touchUpInside)
+        
         
     }
     
     func setUpListingDetailView(){
-        self.listingDetailView = ListingDetailView()
-        guard let detailView = listingDetailView else { return }
         
-        view.addSubview(detailView)
-        detailView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(listingDetailView)
+        listingDetailView.translatesAutoresizingMaskIntoConstraints = false
+        //listingDetailView.contentSize = CGSize(width: self.view.frame.width, height: self.view.frame.height)
         
-        detailView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
-        detailView.widthAnchor.constraint(equalTo: self.view.widthAnchor).isActive = true
-        
-        guard let neighborhoodCollectionView = self.neighborhoodCollectionView else { return }
-        
-        detailView.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true
-        detailView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-        
-        detailView.setUpView(listing: listings[0])
-        
-        
+        listingDetailView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
+        listingDetailView.widthAnchor.constraint(equalTo: self.view.widthAnchor).isActive = true
+        listingDetailView.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true
+        listingDetailView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
+        //listingDetailView.centerYAnchor.constraint(equalTo: self.view.centerYAnchor).isActive = true
+        //listingDetailView.heightAnchor.constraint(equalTo: self.view.heightAnchor).isActive = true
     }
     
-    
     func setUpFilterToggle(){
-        self.toggleViewButton = UIButton()
-        guard let toggleViewButton = self.toggleViewButton else { return }
-        view.addSubview(toggleViewButton)
-        toggleViewButton.translatesAutoresizingMaskIntoConstraints = false
-
-        guard let neighborhoodCollectionView = self.neighborhoodCollectionView else { return }
-        toggleViewButton.leadingAnchor.constraint(equalTo: neighborhoodCollectionView.trailingAnchor, constant: 10).isActive = true
-        toggleViewButton.heightAnchor.constraint(equalTo: neighborhoodCollectionView.heightAnchor).isActive = true
-        toggleViewButton.centerYAnchor.constraint(equalTo: neighborhoodCollectionView.centerYAnchor).isActive = true
-        toggleViewButton.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: 10).isActive = true
-        
-        toggleViewButton.imageView?.contentMode = .scaleAspectFit
-        toggleViewButton.setImage(#imageLiteral(resourceName: "listView"), for: .normal)
-        
-        toggleViewButton.addTarget(self, action: #selector(filterButtonTapped), for: .touchUpInside)
+       
     }
     
   @objc func filterButtonTapped(){
@@ -202,7 +170,6 @@ class ViewController: UIViewController {
 
     
     if mapViewIsEnabled {
-        
         mapViewIsEnabled = false
         toggleViewButton?.setImage(#imageLiteral(resourceName: "mapView"), for: .normal)
         vCollectionView.reloadData()
@@ -211,75 +178,63 @@ class ViewController: UIViewController {
             self.view.sendSubview(toBack: self.mapView)
             
         }
-        
     } else {
-        
         listingHorizontalCollectionView?.reloadData()
         mapViewIsEnabled = true
         toggleViewButton?.setImage(#imageLiteral(resourceName: "listView"), for: .normal)
-        
         UIView.animate(withDuration: 0.2) {
          self.view.sendSubview(toBack: vCollectionView)
-         
         }
-
- 
     }
-    
-    
     }
     
     func setUpVerticalCollectionView(){
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
         listingVerticalCollectionView = UICollectionView(frame: view.bounds, collectionViewLayout: layout)
-        
         guard let collectionView = self.listingVerticalCollectionView else { return }
         collectionView.delegate = self
         collectionView.dataSource = self
         
-         collectionView.register(ListingCollectionViewCell.self, forCellWithReuseIdentifier: "VerticalListingCell")
-        
+        collectionView.register(ListingCollectionViewCell.self, forCellWithReuseIdentifier: "VerticalListingCell")
         view.addSubview(collectionView)
         view.sendSubview(toBack: collectionView)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
-        
-        //collectionView.centerYAnchor.constraint(equalTo: self.view.centerYAnchor).isActive = true
         collectionView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
-        collectionView.widthAnchor.constraint(equalTo: self.view.widthAnchor).isActive = true
-        //collectionView.heightAnchor.constraint(equalTo: self.view.heightAnchor).isActive = true
-        
+        collectionView.widthAnchor.constraint(equalTo: self.view.widthAnchor, multiplier: 1.05).isActive = true
         guard let neighborhoodCollectionView = self.neighborhoodCollectionView else { return }
         collectionView.topAnchor.constraint(equalTo: neighborhoodCollectionView.bottomAnchor).isActive = true
         collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-        
+        //collectionView.addBorders(edges: [.top], color: .darkGray, thickness: 1)
+        collectionView.layer.borderWidth = 0.5
+        collectionView.layer.borderColor = UIColor.darkGray.cgColor
         collectionView.backgroundColor = UIColor.white
+        
     }
     
     func setUpHorizontalCollectionView(){
         self.layout.scrollDirection = .horizontal
         listingHorizontalCollectionView = UICollectionView(frame: view.bounds, collectionViewLayout: layout)
-        
         guard let collectionView = self.listingHorizontalCollectionView else { return }
         collectionView.delegate = self
         collectionView.dataSource = self
-        
         collectionView.register(ListingCollectionViewCell.self, forCellWithReuseIdentifier: "VerticalListingCell")
-        
         collectionView.backgroundColor = .clear
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(collectionView)
-        
         collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -5).isActive = true
         collectionView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         collectionView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         collectionView.heightAnchor.constraint(equalToConstant: 200).isActive = true
-
         collectionView.decelerationRate = 2
         layout.minimumInteritemSpacing = 0
         layout.minimumLineSpacing = 0
-        collectionView.showsHorizontalScrollIndicator = false
+        //collectionView.isPagingEnabled = true
         
+        
+        layout.minimumInteritemSpacing = 0
+        layout.minimumLineSpacing = 0
+        collectionView.showsHorizontalScrollIndicator = false
     }
     
    @objc func leftBarItemTapped(){
@@ -287,9 +242,10 @@ class ViewController: UIViewController {
     }
     
     
-    
    @objc func rightBarItemTapped(){
-        
+    if let url = URL(string: "https://github.com/mapfit/Aptfit-iOS"){
+        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+    }
     }
 
     override func didReceiveMemoryWarning() {
@@ -307,7 +263,6 @@ extension ViewController: UICollectionViewDataSource, UICollectionViewDelegate, 
         }else{
             return listings.count
         }
-       
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -327,7 +282,6 @@ extension ViewController: UICollectionViewDataSource, UICollectionViewDelegate, 
             }else if collectionView == listingHorizontalCollectionView {
                 cell.setUpCellHorizontalScrollingCell(listing: listings[indexPath.row])
             }
-
             return cell
         }
     }
@@ -338,31 +292,28 @@ extension ViewController: UICollectionViewDataSource, UICollectionViewDelegate, 
         }else if collectionView == listingVerticalCollectionView {
             return CGSize(width: self.view.frame.width * 0.9, height: 280)
         }else {
-            return CGSize(width: 300, height: 200)
+            return CGSize(width: 350, height: 200)
         }
-        
     }
-
+//
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+
+        
         return UIEdgeInsetsMake(0, 18, 0, 18)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if collectionView == listingHorizontalCollectionView || collectionView == listingVerticalCollectionView{
             self.setUpListingDetailView()
-            listingDetailView?.setUpView(listing: listings[indexPath.row])
+            listingDetailView.setUpView(listing: listings[indexPath.row])
         }
-        
-        
     }
-    
-    
+
+ 
 }
 
 extension ViewController {
-
     func showNeighborhoods(){
-        
         if let path = Bundle.main.path(forResource: "wof_nyc", ofType: "json") {
             do {
                 let data = try Data(contentsOf: URL(fileURLWithPath: path))
@@ -375,7 +326,6 @@ extension ViewController {
                     for coordinate in feature.geometry.coordinates[0][0]{
                         polygon.append(getCoordinateFromDouble(coordinate))
                     }
-
                     let areaPolygon = mapView.addPolygon([polygon])
                     guard let neighborhood = feature.properties["name"] else { return }
                     areaPolygons[neighborhood] = areaPolygon
@@ -383,24 +333,21 @@ extension ViewController {
                     areaPolygon?.polygonOptions?.strokeColor = "#8a94ff"
                     areaPolygon?.polygonOptions?.fillColor = "#404353FF"
                     areaPolygon?.polygonOptions?.strokeWidth = 3
-
                 }
-
             } catch {
                 // handle error
             }
         }
-        
-        
     }
     
     func getCoordinateFromDouble(_ double: [Double]) -> CLLocationCoordinate2D {
         return CLLocationCoordinate2D(latitude: double[1], longitude: double[0])
     }
     
+   
     func textToImage(drawText text: String, inImage image: UIImage, atPoint point: CGPoint) -> UIImage {
         let textColor = UIColor.white
-        let textFont = UIFont(name: "Helvetica", size: 10)!
+        let textFont = UIFont(name: aptfitFont, size: 10)!
         
         let scale = UIScreen.main.scale
         UIGraphicsBeginImageContextWithOptions(image.size, false, scale)
@@ -428,6 +375,19 @@ extension ViewController {
     
 }
 
+
+extension ViewController : MapDoubleTapGestureDelegate {
+    func mapView(_ view: MFTMapView, recognizer: UIGestureRecognizer, shouldRecognizeDoubleTapGesture location: CGPoint) -> Bool {
+        return false
+    }
+    
+    func mapView(_ view: MFTMapView, recognizer: UIGestureRecognizer, didRecognizeDoubleTapGesture location: CGPoint) {
+        print("Double Tap Disabled")
+    }
+    
+    
+}
+
 extension ViewController: MapMarkerSelectDelegate {
     func mapView(_ view: MFTMapView, didSelectMarker marker: MFTMarker, atScreenPosition position: CGPoint) {
         
@@ -437,8 +397,7 @@ extension ViewController: MapMarkerSelectDelegate {
                     let backToBlack = self.textToImage(drawText: listing.price, inImage: #imageLiteral(resourceName: "customBlackMarker"), atPoint: CGPoint(x: 0, y: 3))
                     oldMarker.setIcon(backToBlack)
                 }
-                
-                
+
                 oldMarker.getBuildingPolygon()?.polygonOptions?.strokeColor = AptfitColors.black.rawValue
                 oldMarker.getBuildingPolygon()?.polygonOptions?.fillColor = AptfitColors.transparentBlack.rawValue
             }
@@ -450,184 +409,20 @@ extension ViewController: MapMarkerSelectDelegate {
             
                 let row = self.listings.index(of: newMarker) as! Int
                 self.listingHorizontalCollectionView?.scrollToItem(at: IndexPath(row: row, section: 0), at: .centeredHorizontally, animated: true)
+                
             }
 
-            
-            
-           
             marker.getBuildingPolygon()?.polygonOptions?.strokeColor = AptfitColors.purple.rawValue
             marker.getBuildingPolygon()?.polygonOptions?.fillColor = AptfitColors.transparentPurple.rawValue
             let center = self.computeOffsetToPoint(from: marker.getPosition(), distance: -10, heading: 0)
-            self.mapView.setZoom(zoomLevel: 18, duration: 0.2)
-            self.mapView.setCenter(position: center, duration: 0.2)
-            self.mapView.setRotation(rotationValue: 0, duration: 0.2)
+            self.mapView.setZoom(zoomLevel: 18, duration: 0.4)
+            self.mapView.setCenter(position: center, duration: 0.4)
+            self.mapView.setRotation(rotationValue: 0, duration: 0.4)
             
             self.selectedMarker = marker
         }
-    
     }
-    
-    
 }
-
-extension ViewController: MapPolygonSelectDelegate {
-    
-    func mapView(_ view: MFTMapView, didSelectPolygon polygon: MFTPolygon, atScreenPosition position: CGPoint) {
-        //change color not working
-        self.mapView.setZoom(zoomLevel: 13, duration: 0.2)
-        
-        if firstTap {
-            setUpHorizontalCollectionView()
-            if let key = areaPolygons.someKey(forValue: polygon) {
-                currentlyShowingArea = key
-            }
-            firstTap = false
-        }
-
-        
-        
-        if currentlyShowingArea == areaPolygons.someKey(forValue: polygon) && firstTap {
-            return
-        }
-        
-        DispatchQueue.main.async(execute: {
-            self.currentAreaPolygon?.polygonOptions?.strokeColor = "#8a94ff"
-            self.currentAreaPolygon?.polygonOptions?.fillColor = "#404353FF"
-            self.currentAreaPolygon = polygon
-        })
-        
-        
-        
-        for marker in self.currentlyShowingMakers {
-           mapView.removeMarker(marker)
-        
-        }
-        
-        currentlyShowingMakers = []
-        
-        guard let key = areaPolygons.someKey(forValue: polygon) else { return }
-        currentlyShowingArea = key
-        
-        var builder = MFTLatLngBounds.Builder()
-        for location in areaPolygons[currentlyShowingArea]!.points[0] {
-            builder.add(latLng: location)
-        }
-        let bounds = builder.build()
-        
-        let offsetCenter = computeOffsetToPoint(from: bounds.center, distance: -1000, heading: 0)
-        mapView.setCenter(position: offsetCenter, duration: 0.4)
-        
-        
-        neighborhoods[1] = key
-        neighborhoodCollectionView?.reloadData()
-        
-        var listingsToShow = [Listing]()
-        
-        switch key {
-        case "Financial District":
-            listingsToShow = financialDistrict()
-        case "Greenwich Village":
-            listingsToShow = greenwichVillage()
-        case "Battery Park City District":
-            listingsToShow = batteryParkCity()
-        case "Little Italy":
-            listingsToShow = littleItaly()
-        case "Chelsea":
-            listingsToShow = chelsea()
-        case "East Village":
-            listingsToShow = eastVillage()
-        case "Tribeca":
-            listingsToShow = tribeca()
-        case "Chinatown":
-            listingsToShow = chinaTown()
-        case "Murray Hill":
-            listingsToShow = murrayHill()
-        case "Stuyvesant Town":
-            listingsToShow = stuyesantTown()
-        case "Washington Heights":
-            listingsToShow = washingtonHeights()
-        case "Hamilton Heights":
-            listingsToShow = hamiltonHeights()
-        case "Central Harlem":
-            listingsToShow = centralHarlem()
-        case "SoHo":
-            listingsToShow = soho()
-        case "Spanish Harlem":
-            listingsToShow = spanishHarlem()
-        case "Morningside Heights":
-            listingsToShow = morningsideHeights()
-        case "Hell's Kitchen":
-            listingsToShow = hellsKitchen()
-        case "Midtown West":
-            listingsToShow = midtownWest()
-        case "Midtown East":
-            listingsToShow = midtownEast()
-        case "Lower East Side":
-            listingsToShow = lowerEastside()
-        case "Gramercy":
-            listingsToShow = gramercy()
-        case "West Side":
-            listingsToShow = upperWestSide()
-        case "West Village":
-            listingsToShow = westVillage()
-        case "NoHo":
-            listingsToShow = noho()
-        case "Two Bridges":
-            listingsToShow = twoBridges()
-        case "Nolita":
-            listingsToShow = nolita()
-        case "Kips Bay":
-            listingsToShow = kipsBay()
-        case "Upper East Side":
-            listingsToShow = upperEastSide()
-        case "City Hall Area":
-            listingsToShow = cityHallArea()
-        case "Roosevelt Island":
-            listingsToShow = rooseveltIsland()
-        case "Flatiron District":
-            listingsToShow = flatironDistrict()
-        case "Inwood":
-            listingsToShow = inwood()
-        default:
-            print("polygon not found")
-        }
-        
-        listings = listingsToShow
-        listingHorizontalCollectionView?.reloadData()
-        
-        
-        for listing in listingsToShow {
-           
-            self.mapView.addMarker(address: listing.address) { (marker, error) in
-                let image = self.textToImage(drawText: listing.price, inImage: #imageLiteral(resourceName: "customBlackMarker"), atPoint: CGPoint(x: 0, y: 3))
-                marker?.setIcon(image)
-                marker?.markerOptions?.anchorPosition = .center
-                
-                marker?.markerOptions?.setWidth(width: 67)
-                marker?.markerOptions?.setHeight(height: 40)
-                if let marker = marker { self.currentlyShowingMakers.append(marker)}
-                
-                guard let options = marker?.getBuildingPolygon()?.polygonOptions else { return }
-                options.strokeColor = "#000000"
-                options.fillColor = "#274A4A4A"
-                
-                polygon.polygonOptions?.strokeColor = "#000000"
-                polygon.polygonOptions?.fillColor = "#274A4A4A"
-                self.markers[listing] = marker
-                
-               
-            }
-        
-        }
-    
-      
-    
-    }
-    
-    
-}
-
-
 
 
 
@@ -636,6 +431,85 @@ extension Dictionary where Value: Equatable {
         return first(where: { $1 == val })?.key
     }
 }
+
+
+extension ViewController {
+
+    
+    
+    
+    @objc func snapToCell(){
+        guard let collectionView = self.listingVerticalCollectionView else { return }
+        
+        let center = self.view.convert(collectionView.center, to: collectionView)
+        
+        if let index = collectionView.indexPathForItem(at: center) {
+            collectionView.scrollToItem(at: index, at: .centeredHorizontally, animated: true)
+    }
+    }
+    
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        snapToCell()
+    }
+    
+    
+    
+    func scrollViewWillBeginDecelerating(_ scrollView: UIScrollView) {
+        
+        if scrollView.panGestureRecognizer.velocity(in: view).x > 300 {
+            guard let collectionView = self.listingHorizontalCollectionView else { return }
+            
+            let center = self.view.convert(collectionView.center, to: collectionView)
+            
+            if var index = collectionView.indexPathForItem(at: center) {
+                
+                if index.row != 0 {
+                    index.row -= 1
+                }
+                collectionView.scrollToItem(at: index, at: .centeredHorizontally, animated: true)
+                if let marker = markers[listings[index.row]] {
+                    mapView(self.mapView, didSelectMarker: marker, atScreenPosition: collectionView.center)
+                }
+                
+            }else {
+                if let marker = markers[listings[collectionView.indexPathsForVisibleItems[0].row]] {
+                    mapView(self.mapView, didSelectMarker: marker, atScreenPosition: collectionView.center)
+                }
+            }
+        }else if scrollView.panGestureRecognizer.velocity(in: view).x < -300 {
+            
+            guard let collectionView = self.listingHorizontalCollectionView else { return }
+            
+            let center = self.view.convert(collectionView.center, to: collectionView)
+            
+            if var index = collectionView.indexPathForItem(at: center) {
+                if index.row != listings.count - 1 {
+                    index.row += 1
+                }
+                collectionView.scrollToItem(at: index, at: .centeredHorizontally, animated: true)
+                
+                if let marker = markers[listings[index.row]] {
+                     mapView(self.mapView, didSelectMarker: marker, atScreenPosition: collectionView.center)
+                }
+               
+            }else {
+                if let marker = markers[listings[collectionView.indexPathsForVisibleItems[0].row]] {
+                    mapView(self.mapView, didSelectMarker: marker, atScreenPosition: collectionView.center)
+                }
+            }
+            
+        }
+    }
+    
+    func zoomAndCenter(zoom: Float, coordinate: CLLocationCoordinate2D, duration: Float){
+        let queue: OperationQueue = OperationQueue()
+        queue.maxConcurrentOperationCount = (2)
+        queue.addOperation({self.mapView.setCenter(position: coordinate, duration: duration)})
+        queue.addOperation({self.mapView.setZoom(zoomLevel: zoom, duration: duration)})
+    }
+
+}
+
 
 extension ViewController {
     
@@ -905,6 +779,7 @@ extension ViewController {
     
 }
 
+
 extension ViewController {
     func computeOffsetToPoint(from: CLLocationCoordinate2D, distance: Double, heading: Double) -> CLLocationCoordinate2D {
     let dist = distance / 6371009
@@ -928,32 +803,255 @@ extension FloatingPoint {
     var radiansToDegrees: Self { return self * 180 / .pi }
 }
 
-class SnappingCollectionViewLayout: UICollectionViewFlowLayout {
+
+
     
-    override func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint, withScrollingVelocity velocity: CGPoint) -> CGPoint {
-        guard let collectionView = collectionView else { return super.targetContentOffset(forProposedContentOffset: proposedContentOffset, withScrollingVelocity: velocity) }
+    extension UIView {
         
-        var offsetAdjustment = CGFloat.greatestFiniteMagnitude
-        let horizontalOffset = proposedContentOffset.x + collectionView.contentInset.left + 18
-        
-        let targetRect = CGRect(x: proposedContentOffset.x, y: 0, width: collectionView.bounds.size.width, height: collectionView.bounds.size.height)
-        
-        let layoutAttributesArray = super.layoutAttributesForElements(in: targetRect)
-        
-        layoutAttributesArray?.forEach({ (layoutAttributes) in
-            let itemOffset = layoutAttributes.frame.origin.x
-            if fabsf(Float(itemOffset - horizontalOffset)) < fabsf(Float(offsetAdjustment)) {
-                offsetAdjustment = itemOffset - horizontalOffset
+        @discardableResult func addBorders(edges: UIRectEdge, color: UIColor = .darkGray, thickness: CGFloat = 5.0) -> [UIView] {
+            
+            var borders = [UIView]()
+            
+            func border() -> UIView {
+                let border = UIView(frame: CGRect.zero)
+                border.backgroundColor = color
+                border.translatesAutoresizingMaskIntoConstraints = false
+                return border
             }
-        })
+            
+            if edges.contains(.top) || edges.contains(.all) {
+                let top = border()
+                addSubview(top)
+                addConstraints(
+                    NSLayoutConstraint.constraints(withVisualFormat: "V:|-(0)-[top(==thickness)]",
+                                                   options: [],
+                                                   metrics: ["thickness": thickness],
+                                                   views: ["top": top]))
+                addConstraints(
+                    NSLayoutConstraint.constraints(withVisualFormat: "H:|-(0)-[top]-(0)-|",
+                                                   options: [],
+                                                   metrics: nil,
+                                                   views: ["top": top]))
+                borders.append(top)
+            }
+            
+            if edges.contains(.left) || edges.contains(.all) {
+                let left = border()
+                addSubview(left)
+                addConstraints(
+                    NSLayoutConstraint.constraints(withVisualFormat: "H:|-(0)-[left(==thickness)]",
+                                                   options: [],
+                                                   metrics: ["thickness": thickness],
+                                                   views: ["left": left]))
+                addConstraints(
+                    NSLayoutConstraint.constraints(withVisualFormat: "V:|-(0)-[left]-(0)-|",
+                                                   options: [],
+                                                   metrics: nil,
+                                                   views: ["left": left]))
+                borders.append(left)
+            }
+            
+            if edges.contains(.right) || edges.contains(.all) {
+                let right = border()
+                addSubview(right)
+                addConstraints(
+                    NSLayoutConstraint.constraints(withVisualFormat: "H:[right(==thickness)]-(0)-|",
+                                                   options: [],
+                                                   metrics: ["thickness": thickness],
+                                                   views: ["right": right]))
+                addConstraints(
+                    NSLayoutConstraint.constraints(withVisualFormat: "V:|-(0)-[right]-(0)-|",
+                                                   options: [],
+                                                   metrics: nil,
+                                                   views: ["right": right]))
+                borders.append(right)
+            }
+            
+            if edges.contains(.bottom) || edges.contains(.all) {
+                let bottom = border()
+                addSubview(bottom)
+                addConstraints(
+                    NSLayoutConstraint.constraints(withVisualFormat: "V:[bottom(==thickness)]-(0)-|",
+                                                   options: [],
+                                                   metrics: ["thickness": thickness],
+                                                   views: ["bottom": bottom]))
+                addConstraints(
+                    NSLayoutConstraint.constraints(withVisualFormat: "H:|-(0)-[bottom]-(0)-|",
+                                                   options: [],
+                                                   metrics: nil,
+                                                   views: ["bottom": bottom]))
+                borders.append(bottom)
+            }
+            
+            return borders
+        }
         
-        return CGPoint(x: proposedContentOffset.x + offsetAdjustment, y: proposedContentOffset.y)
+}
+
+extension UICollectionView {
+    
+    var centerPoint : CGPoint {
+        
+        get {
+            return CGPoint(x: self.center.x + self.contentOffset.x, y: self.center.y + self.contentOffset.y);
+        }
+    }
+    
+    var centerCellIndexPath: IndexPath? {
+        
+        if let centerIndexPath: IndexPath  = self.indexPathForItem(at: self.centerPoint) {
+            return centerIndexPath
+        }
+        return nil
     }
 }
 
-
-
-
+extension ViewController: MapPolygonSelectDelegate {
+    
+    func mapView(_ view: MFTMapView, didSelectPolygon polygon: MFTPolygon, atScreenPosition position: CGPoint) {
+        //change color not working
+        self.mapView.setZoom(zoomLevel: 13, duration: 0.5)
+        
+        if firstTap {
+            setUpHorizontalCollectionView()
+            if let key = areaPolygons.someKey(forValue: polygon) {
+                currentlyShowingArea = key
+            }
+            firstTap = false
+        }
+        
+        if currentlyShowingArea == areaPolygons.someKey(forValue: polygon) && firstTap {
+            return
+        }
+        
+        DispatchQueue.main.async(execute: {
+            self.currentAreaPolygon?.polygonOptions?.strokeColor = "#8a94ff"
+            self.currentAreaPolygon?.polygonOptions?.fillColor = "#404353FF"
+            self.currentAreaPolygon = polygon
+        })
+        
+        
+        
+        for marker in self.currentlyShowingMakers {
+            mapView.removeMarker(marker)
+            
+        }
+        
+        currentlyShowingMakers = []
+        
+        guard let key = areaPolygons.someKey(forValue: polygon) else { return }
+        currentlyShowingArea = key
+        
+        var builder = MFTLatLngBounds.Builder()
+        for location in areaPolygons[currentlyShowingArea]!.points[0] {
+            builder.add(latLng: location)
+        }
+        let bounds = builder.build()
+        
+        let offsetCenter = computeOffsetToPoint(from: bounds.center, distance: -1000, heading: 0)
+        mapView.setCenter(position: offsetCenter, duration: 0.4)
+        
+        
+        neighborhoods[1] = key
+        neighborhoodCollectionView?.reloadData()
+        
+        var listingsToShow = [Listing]()
+        
+        switch key {
+        case "Financial District":
+            listingsToShow = financialDistrict()
+        case "Greenwich Village":
+            listingsToShow = greenwichVillage()
+        case "Battery Park City District":
+            listingsToShow = batteryParkCity()
+        case "Little Italy":
+            listingsToShow = littleItaly()
+        case "Chelsea":
+            listingsToShow = chelsea()
+        case "East Village":
+            listingsToShow = eastVillage()
+        case "Tribeca":
+            listingsToShow = tribeca()
+        case "Chinatown":
+            listingsToShow = chinaTown()
+        case "Murray Hill":
+            listingsToShow = murrayHill()
+        case "Stuyvesant Town":
+            listingsToShow = stuyesantTown()
+        case "Washington Heights":
+            listingsToShow = washingtonHeights()
+        case "Hamilton Heights":
+            listingsToShow = hamiltonHeights()
+        case "Central Harlem":
+            listingsToShow = centralHarlem()
+        case "SoHo":
+            listingsToShow = soho()
+        case "Spanish Harlem":
+            listingsToShow = spanishHarlem()
+        case "Morningside Heights":
+            listingsToShow = morningsideHeights()
+        case "Hell's Kitchen":
+            listingsToShow = hellsKitchen()
+        case "Midtown West":
+            listingsToShow = midtownWest()
+        case "Midtown East":
+            listingsToShow = midtownEast()
+        case "Lower East Side":
+            listingsToShow = lowerEastside()
+        case "Gramercy":
+            listingsToShow = gramercy()
+        case "West Side":
+            listingsToShow = upperWestSide()
+        case "West Village":
+            listingsToShow = westVillage()
+        case "NoHo":
+            listingsToShow = noho()
+        case "Two Bridges":
+            listingsToShow = twoBridges()
+        case "Nolita":
+            listingsToShow = nolita()
+        case "Kips Bay":
+            listingsToShow = kipsBay()
+        case "Upper East Side":
+            listingsToShow = upperEastSide()
+        case "City Hall Area":
+            listingsToShow = cityHallArea()
+        case "Roosevelt Island":
+            listingsToShow = rooseveltIsland()
+        case "Flatiron District":
+            listingsToShow = flatironDistrict()
+        case "Inwood":
+            listingsToShow = inwood()
+        default:
+            print("polygon not found")
+        }
+        
+        listings = listingsToShow
+        listingHorizontalCollectionView?.reloadData()
+        
+        
+        for listing in listingsToShow {
+            
+            self.mapView.addMarker(address: listing.address) { (marker, error) in
+                let image = self.textToImage(drawText: listing.price, inImage: #imageLiteral(resourceName: "customBlackMarker"), atPoint: CGPoint(x: 0, y: 5))
+                marker?.setIcon(image)
+                marker?.markerOptions?.anchorPosition = .center
+                
+                marker?.markerOptions?.setWidth(width: 67)
+                marker?.markerOptions?.setHeight(height: 40)
+                if let marker = marker { self.currentlyShowingMakers.append(marker)}
+                
+                guard let options = marker?.getBuildingPolygon()?.polygonOptions else { return }
+                options.strokeColor = "#000000"
+                options.fillColor = "#274A4A4A"
+                
+                polygon.polygonOptions?.strokeColor = "#000000"
+                polygon.polygonOptions?.fillColor = "#274A4A4A"
+                self.markers[listing] = marker
+            }
+        }
+    }
+}
 
 
 
