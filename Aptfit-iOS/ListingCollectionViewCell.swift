@@ -215,6 +215,10 @@ class ListingCollectionViewCell: UICollectionViewCell {
         
     }
     
+    func removeHighlight(){
+        self.topBorder.removeFromSuperview()
+    }
+    
     func hightlight() {
       
         self.card.addSubview(topBorder)

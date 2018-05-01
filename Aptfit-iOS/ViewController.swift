@@ -434,8 +434,26 @@ extension Dictionary where Value: Equatable {
 
 
 extension ViewController {
-
     
+    func removeHighlightFromCells(){
+        guard let collectionView = self.listingHorizontalCollectionView else { return }
+        
+        for case let cell as ListingCollectionViewCell in collectionView.visibleCells {
+            cell.removeHighlight()
+            
+        }
+    }
+
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+
+    }
+    
+    
+    
+    func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
+        //self.removeHighlightFromCells()
+        self.scrollAndHighlight(scrollView)
+    }
     
     
     @objc func snapToCell(){
@@ -449,12 +467,19 @@ extension ViewController {
     }
     
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        snapToCell()
+        self.removeHighlightFromCells()
+        self.scrollAndHighlight(scrollView)
     }
     
     
     
     func scrollViewWillBeginDecelerating(_ scrollView: UIScrollView) {
+        self.removeHighlightFromCells()
+        self.scrollAndHighlight(scrollView)
+ 
+    }
+    
+    func scrollAndHighlight(_ scrollView: UIScrollView){
         
         if scrollView.panGestureRecognizer.velocity(in: view).x > 300 {
             guard let collectionView = self.listingHorizontalCollectionView else { return }
@@ -466,17 +491,22 @@ extension ViewController {
                 if index.row != 0 {
                     index.row -= 1
                 }
+                
                 collectionView.scrollToItem(at: index, at: .centeredHorizontally, animated: true)
                 if let marker = markers[listings[index.row]] {
+                    let cell = collectionView.cellForItem(at: index) as? ListingCollectionViewCell
+                    cell?.hightlight()
                     mapView(self.mapView, didSelectMarker: marker, atScreenPosition: collectionView.center)
                 }
                 
             }else {
                 if let marker = markers[listings[collectionView.indexPathsForVisibleItems[0].row]] {
+                    let cell = collectionView.cellForItem(at: collectionView.indexPathsForVisibleItems[0]) as? ListingCollectionViewCell
+                    cell?.hightlight()
                     mapView(self.mapView, didSelectMarker: marker, atScreenPosition: collectionView.center)
                 }
             }
-        }else if scrollView.panGestureRecognizer.velocity(in: view).x < -300 {
+        }else if scrollView.panGestureRecognizer.velocity(in: view).x < -100 {
             
             guard let collectionView = self.listingHorizontalCollectionView else { return }
             
@@ -489,16 +519,21 @@ extension ViewController {
                 collectionView.scrollToItem(at: index, at: .centeredHorizontally, animated: true)
                 
                 if let marker = markers[listings[index.row]] {
-                     mapView(self.mapView, didSelectMarker: marker, atScreenPosition: collectionView.center)
+                    let cell = collectionView.cellForItem(at: index) as? ListingCollectionViewCell
+                    cell?.hightlight()
+                    mapView(self.mapView, didSelectMarker: marker, atScreenPosition: collectionView.center)
                 }
-               
+                
             }else {
                 if let marker = markers[listings[collectionView.indexPathsForVisibleItems[0].row]] {
+                    let cell = collectionView.cellForItem(at: collectionView.indexPathsForVisibleItems[0]) as? ListingCollectionViewCell
+                    cell?.hightlight()
                     mapView(self.mapView, didSelectMarker: marker, atScreenPosition: collectionView.center)
                 }
             }
             
         }
+    
     }
     
     func zoomAndCenter(zoom: Float, coordinate: CLLocationCoordinate2D, duration: Float){
@@ -1044,7 +1079,7 @@ extension ViewController: MapPolygonSelectDelegate {
                 guard let options = marker?.getBuildingPolygon()?.polygonOptions else { return }
                 options.strokeColor = "#000000"
                 options.fillColor = "#274A4A4A"
-                
+                polygon.polygonOptions?.drawOrder = 900
                 polygon.polygonOptions?.strokeColor = "#000000"
                 polygon.polygonOptions?.fillColor = "#274A4A4A"
                 self.markers[listing] = marker
