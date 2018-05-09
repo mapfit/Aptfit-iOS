@@ -410,6 +410,7 @@ extension ViewController: MapMarkerSelectDelegate {
                 let row = self.listings.index(of: newMarker) as! Int
                 self.listingHorizontalCollectionView?.scrollToItem(at: IndexPath(row: row, section: 0), at: .centeredHorizontally, animated: true)
                 
+                
             }
 
             marker.getBuildingPolygon()?.polygonOptions?.strokeColor = AptfitColors.purple.rawValue
