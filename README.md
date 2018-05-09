@@ -1,4 +1,4 @@
-![alt text](https://github.com/mapfit/store-locator-iOS-sample/blob/master/StoreLocator-iOS.png)
+![alt text](https://github.com/mapfit/Aptfit-iOS/blob/master/iOS-Banner.png)
 
 # Aptfit Sample Project
 This sample project is made to demonstrate the usage of [Mapfit iOS SDK](https://github.com/mapfit/iOS-sdk). In the project, NYC neighborhood and building polygons are displayed on the map.
